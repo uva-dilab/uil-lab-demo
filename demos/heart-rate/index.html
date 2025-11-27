@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UIL Heart Rate Demo – Minimal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+
+     <!-- ENTRY VIEW (for facilitator) -->
+  <div id="entryView" style="display:none;">
+    <h1>Data Entry (Facilitator)</h1>
+    <p>Use this screen to enter heart rates for each visitor.</p>
+
+    <label>
+      Visitor name / code:
+      <input id="nameInput" type="text" placeholder="e.g. Anna, S3" />
+    </label>
+    <br /><br />
+
+    <label>
+      Resting HR:
+      <input id="restInput" type="number" placeholder="e.g. 72" />
+    </label>
+    <br /><br />
+
+    <label>
+      Stress HR:
+      <input id="stressInput" type="number" placeholder="e.g. 88" />
+    </label>
+    <br /><br />
+
+    <label>
+      Relax HR:
+      <input id="relaxInput" type="number" placeholder="e.g. 76" />
+    </label>
+    <br /><br />
+
+    <button id="saveVisitorBtn">Save visitor</button>
+
+    <p id="entryStatus"></p>
+  </div>
+
+
