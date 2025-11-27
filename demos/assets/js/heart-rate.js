@@ -75,3 +75,28 @@ function setupEntryView() {
     document.getElementById("relaxInput").value = "";
   });
 }
+
+/* ---------- GRAPH VIEW ---------- */
+
+function renderGraphView() {
+  const pre = document.getElementById("graphData");
+  const visitors = loadVisitors();
+  const latest = visitors[visitors.length - 1];
+
+  if (!latest) {
+    pre.textContent = "No visitors yet.";
+  } else {
+    pre.textContent = "Latest visitor:\n" + JSON.stringify(latest, null, 2);
+  }
+}
+
+function setupGraphView() {
+  renderGraphView();
+
+  // Re-render whenever another window updates localStorage
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEY) {
+      renderGraphView();
+    }
+  });
+}
