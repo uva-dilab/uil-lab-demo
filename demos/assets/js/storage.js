@@ -1,30 +1,35 @@
 // storage.js
-// Handles reading/writing visitors to localStorage
+// Shared storage via a tiny Flask backend
 
 (function (global) {
-  const STORAGE_KEY = "uil_hr_visitors_v1";
+  // TODO: change this to the actual IP of the machine running Flask
+  const API_BASE = "http://145.109.87.86:5000";
 
-  function loadVisitors() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      console.error("Error reading visitors:", e);
+  async function loadVisitors() {
+    const res = await fetch(API_BASE + "/api/visitors");
+    if (!res.ok) {
+      console.error("[storage.js] Failed to load visitors", res.status);
       return [];
+    }
+    return await res.json();
+  }
+
+  async function upsertVisitor(visitor) {
+    const res = await fetch(API_BASE + "/api/visitors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(visitor),
+    });
+    if (!res.ok) {
+      console.error("[storage.js] Failed to upsert visitor", res.status);
     }
   }
 
-  function saveVisitors(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  }
-
-  // Expose a small API on a global namespace
   global.UILStorage = {
-    STORAGE_KEY: STORAGE_KEY,
-    loadVisitors: loadVisitors,
-    saveVisitors: saveVisitors,
+    loadVisitors,
+    upsertVisitor,  // note: singular now
   };
 
-  console.log("[storage.js] UILStorage initialised");
+  console.log("[storage.js] UILStorage initialised (backend mode)");
 })(window);
 
