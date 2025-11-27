@@ -37,3 +37,41 @@ function showView(viewName) {
     document.getElementById("scoreboardView").style.display = "block";
   }
 }
+
+/* ---------- ENTRY VIEW ---------- */
+
+function setupEntryView() {
+  const saveBtn = document.getElementById("saveVisitorBtn");
+  const statusEl = document.getElementById("entryStatus");
+
+  saveBtn.addEventListener("click", () => {
+    const name = document.getElementById("nameInput").value.trim() || "Visitor";
+    const rest = parseFloat(document.getElementById("restInput").value);
+    const stress = parseFloat(document.getElementById("stressInput").value);
+    const relax = parseFloat(document.getElementById("relaxInput").value);
+
+    if (isNaN(rest) || isNaN(stress) || isNaN(relax)) {
+      statusEl.textContent = "Please enter all three heart rates.";
+      return;
+    }
+
+    const visitors = loadVisitors();
+    const visitor = {
+      id: Date.now(),
+      name,
+      resting: rest,
+      stress,
+      relax,
+      createdAt: new Date().toISOString()
+    };
+    visitors.push(visitor);
+    saveVisitors(visitors);
+
+    statusEl.textContent = `Saved visitor "${name}" with HRs: ${rest} / ${stress} / ${relax}.`;
+
+    // Clear HR inputs for next visitor (keep name if you want)
+    document.getElementById("restInput").value = "";
+    document.getElementById("stressInput").value = "";
+    document.getElementById("relaxInput").value = "";
+  });
+}
