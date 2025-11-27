@@ -1,21 +1,6 @@
 // UIL Heart Rate Demo – minimal 3-view app
+// Main app controller: routing, entry view, scoreboard
 
-const STORAGE_KEY = "uil_hr_visitors_v1";
-/* ---------- Storage helpers ---------- */
-
-function loadVisitors() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error("Error reading visitors:", e);
-    return [];
-  }
-}
-
-function saveVisitors(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
 
 /* ---------- View switching ---------- */
 
@@ -141,3 +126,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Current view:", view);
 })
+
