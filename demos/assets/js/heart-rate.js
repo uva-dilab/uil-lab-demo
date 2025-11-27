@@ -100,3 +100,44 @@ function setupGraphView() {
     }
   });
 }
+
+/* ---------- SCOREBOARD VIEW ---------- */
+
+function renderScoreboardView() {
+  const pre = document.getElementById("scoreboardData");
+  const visitors = loadVisitors();
+
+  if (!visitors.length) {
+    pre.textContent = "No visitors yet.";
+  } else {
+    pre.textContent = "All visitors:\n" + JSON.stringify(visitors, null, 2);
+  }
+}
+
+function setupScoreboardView() {
+  renderScoreboardView();
+
+  // Re-render whenever another window updates localStorage
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEY) {
+      renderScoreboardView();
+    }
+  });
+}
+
+* ---------- App init ---------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const view = getViewFromUrl();
+  showView(view);
+
+  if (view === "entry") {
+    setupEntryView();
+  } else if (view === "graph") {
+    setupGraphView();
+  } else if (view === "scoreboard") {
+    setupScoreboardView();
+  }
+
+  console.log("Current view:", view);
+})
