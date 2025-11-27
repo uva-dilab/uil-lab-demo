@@ -125,7 +125,7 @@ function setupScoreboardView() {
   });
 }
 
-* ---------- App init ---------- */
+//* ---------- App init ---------- */
 
 document.addEventListener("DOMContentLoaded", () => {
   const view = getViewFromUrl();
