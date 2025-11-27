@@ -4,10 +4,17 @@
   <meta charset="UTF-8" />
   <title>UIL Heart Rate Demo – Minimal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Chart.js: external library, global Chart object -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Our JS modules (order matters!) -->
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/chart-view.js"></script>
+  <script src="../assets/js/scoreboard-view.js"></script>
+  <script src="../assets/js/heart-rate.js"></script>
 </head>
 <body>
-
-     <!-- ENTRY VIEW (for facilitator) -->
+  <!-- ENTRY VIEW (for facilitator) -->
   <div id="entryView" style="display:none;">
     <h1>Data Entry (Facilitator)</h1>
     <p>Use this screen to enter heart rates for each visitor.</p>
@@ -43,21 +50,19 @@
 
   <!-- GRAPH VIEW (small screen) -->
   <div id="graphView" style="display:none;">
-    <h1>Graph Screen (placeholder)</h1>
-    <p>This will later show a fun line chart of the <strong>latest visitor</strong>.</p>
-    <pre id="graphData"></pre>
+    <h1>Heart Rate Graph</h1>
+    <p id="graphStatus">Waiting for data…</p>
+    <div style="width: 100%; max-width: 600px; height: 300px;">
+      <canvas id="hrChart"></canvas>
+    </div>
   </div>
 
   <!-- SCOREBOARD VIEW (large screen) -->
   <div id="scoreboardView" style="display:none;">
-    <h1>Scoreboard Screen (placeholder)</h1>
-    <p>This will later show a table of <strong>all visitors</strong>.</p>
+    <h1>Scoreboard Screen</h1>
+    <p>All visitors (live updating).</p>
     <pre id="scoreboardData"></pre>
   </div>
-
-  <!-- App logic -->
-  <script src="../assets/js/heart-rate.js"></script>
 </body>
 </html>
-
 
