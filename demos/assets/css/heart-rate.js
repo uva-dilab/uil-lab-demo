@@ -1,0 +1,103 @@
+/* General page styling */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000 100%);
+  color: #e5e7eb;
+}
+
+/* Ensure each view can occupy full height */
+#entryView,
+#graphView,
+#scoreboardView {
+  min-height: 100vh;
+}
+
+/* --- GRAPH VIEW LAYOUT --- */
+
+#graphView {
+  display: none; /* will be toggled by JS */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.graph-shell {
+  width: 100%;
+  max-width: 900px;
+}
+
+.graph-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.graph-subtitle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.graph-card {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 20px;
+  padding: 16px 20px 20px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+}
+
+.graph-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.graph-status-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.graph-status-visitor {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+.graph-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.7);
+  color: #bbf7d0;
+}
+
+.graph-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.graph-canvas-wrapper {
+  margin-top: 8px;
+  width: 100%;
+  height: 320px;
+}
+
+/* Small helper text at bottom */
+.graph-footer {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-align: right;
+}
+
