@@ -17,7 +17,7 @@
   <!-- ENTRY VIEW (for facilitator) -->
   <div id="entryView" style="display:none;">
     <h1>Data Entry (Facilitator)</h1>
-    <p>Use this screen to enter heart rates for each visitor.</p>
+    <p>Use this screen to enter heart rates for each visitor as you go through the 3 steps.</p>
 
     <label>
       Visitor name / code:
@@ -25,25 +25,38 @@
     </label>
     <br /><br />
 
+    <button id="startVisitorBtn">Start new visitor</button>
+    <p id="currentVisitorLabel"><em>No active visitor.</em></p>
+
+    <hr />
+
+    <p><strong>Step 1 – Resting heart rate</strong></p>
     <label>
       Resting HR:
       <input id="restInput" type="number" placeholder="e.g. 72" />
     </label>
+    <button id="saveRestBtn">Save Rest HR</button>
+
     <br /><br />
 
+    <p><strong>Step 2 – After stress sound</strong></p>
     <label>
       Stress HR:
       <input id="stressInput" type="number" placeholder="e.g. 88" />
     </label>
+    <button id="saveStressBtn">Save Stress HR</button>
+
     <br /><br />
 
+    <p><strong>Step 3 – After relax sound</strong></p>
     <label>
       Relax HR:
       <input id="relaxInput" type="number" placeholder="e.g. 76" />
     </label>
-    <br /><br />
+    <button id="saveRelaxBtn">Save Relax HR</button>
 
-    <button id="saveVisitorBtn">Save visitor</button>
+    <br /><br />
+    <button id="finishVisitorBtn">Finish visitor</button>
 
     <p id="entryStatus"></p>
   </div>
@@ -61,7 +74,7 @@
   <div id="scoreboardView" style="display:none;">
     <h1>Scoreboard Screen</h1>
     <p>All visitors (live updating).</p>
-    <pre id="scoreboardData"></pre>
+    <div id="scoreboardContainer">Loading…</div>
   </div>
 </body>
 </html>
