@@ -20,7 +20,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;       /* centre horizontally */
-  justify-content: flex-start; /* content towards top, not vertically centered */
+  justify-content: center; /* content towards top, not vertically centered */
   min-height: 100vh;
   padding: 32px 40px;
   box-sizing: border-box;
@@ -31,12 +31,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;     /* no vertical centering */
+  justify-content: center;     /* no vertical centering */
   width: 100%;
   max-width: 1100px;               /* nice horizontal width for iPad landscape */
   gap: 18px;                       /* space between title and chart */
   margin: 0 auto;
   text-align: center;
+  transform: translateY(-5vh); /* tiny lift (looks more balanced in centre) */
+  padding-top: 90px;
+
 }
 
 /* Big exhibition title */
@@ -92,7 +95,7 @@ body {
 .graph-canvas-wrapper {
   margin-top: 8px;
   width: 100%;
-  height: 280px;  /* 🔹 horizontal strip; adjust up/down if needed */
+  height: 320px;  /* 🔹 horizontal strip; adjust up/down if needed */
 }
 
 /* Hide the detailed status text under the graph (JS still updates for accessibility) */

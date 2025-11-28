@@ -185,7 +185,7 @@
               title: {
                 display: true,
                 text: "Heart Rate (BPM)", // Y-axis label
-                color: "#ffffff",
+                color: "#E5E7EB",
                 font: { size: 22, weight: "600" },
               },
               ticks: {
@@ -203,7 +203,7 @@
               title: {
                 display: true,
                 text: "Emotional State", // X-axis label
-                color: "#ffffff",
+                color: "#E5E7EB",
                 font: { size: 22, weight: "600" },
               },
               ticks: {
