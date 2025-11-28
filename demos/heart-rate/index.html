@@ -61,14 +61,39 @@
     <p id="entryStatus"></p>
   </div>
 
-  <!-- GRAPH VIEW (small screen) -->
+    <!-- GRAPH VIEW (small screen) -->
   <div id="graphView" style="display:none;">
-    <h1>Heart Rate Graph</h1>
-    <p id="graphStatus">Waiting for data…</p>
-    <div style="width: 100%; max-width: 600px; height: 300px;">
-      <canvas id="hrChart"></canvas>
+    <div class="graph-shell">
+      <div class="graph-title">Heart Rate Story</div>
+      <div class="graph-subtitle">
+        Rest → Stress sound → Relax sound, for the latest visitor on this station.
+      </div>
+
+      <div class="graph-card">
+        <div class="graph-header-row">
+          <div>
+            <div class="graph-status-label">Current visitor</div>
+            <div id="graphStatus" class="graph-status-visitor">
+              Waiting for data…
+            </div>
+          </div>
+          <div class="graph-badge">
+            <span class="graph-badge-dot"></span>
+            Live update
+          </div>
+        </div>
+
+        <div class="graph-canvas-wrapper">
+          <canvas id="hrChart"></canvas>
+        </div>
+
+        <div class="graph-footer">
+          Screen configured for station via <code>?station=1</code> or <code>?station=2</code>.
+        </div>
+      </div>
     </div>
   </div>
+
 
   <!-- SCOREBOARD VIEW (large screen) -->
   <div id="scoreboardView" style="display:none;">
