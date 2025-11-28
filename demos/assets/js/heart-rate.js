@@ -7,7 +7,7 @@
   const UILScoreboardView = global.UILScoreboardView;
 
   if (!UILStorage) {
-    console.error("[heart-rate.js] UILStorage is not available. Check that storage.js is loaded first.");
+    console.error("[heart-rate.js] UILStorage is not available. Check storage.js.");
     return;
   }
 
@@ -67,6 +67,7 @@
 
   function setupEntryView() {
     const stationId = getStationIdFromUrl();
+
     const startBtn = document.getElementById("startVisitorBtn");
     const saveRestBtn = document.getElementById("saveRestBtn");
     const saveStressBtn = document.getElementById("saveStressBtn");
@@ -75,7 +76,14 @@
     const statusEl = document.getElementById("entryStatus");
 
     if (!startBtn || !saveRestBtn || !saveStressBtn || !saveRelaxBtn || !finishBtn || !statusEl) {
-      console.warn("[heart-rate.js] Entry elements not found.");
+      console.warn("[heart-rate.js] Entry elements not found:", {
+        startBtn,
+        saveRestBtn,
+        saveStressBtn,
+        saveRelaxBtn,
+        finishBtn,
+        statusEl,
+      });
       return;
     }
 

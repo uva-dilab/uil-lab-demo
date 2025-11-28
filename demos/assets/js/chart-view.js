@@ -8,12 +8,16 @@
     return;
   }
 
-  const STORAGE_KEY = UILStorage.STORAGE_KEY;
-  const loadVisitors = UILStorage.loadVisitors;
+  function getStationIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const station = params.get("station");
+    return station ? parseInt(station, 10) : null;
+  }
 
   let hrChart = null;
+  let pollInterval = null;
 
-  function renderGraphView() {
+  async function renderGraphView() {
     const statusEl = document.getElementById("graphStatus");
     const canvas = document.getElementById("hrChart");
 
@@ -22,10 +26,18 @@
       return;
     }
 
-    const visitors = loadVisitors();
+    const stationId = getStationIdFromUrl();
+    const allVisitors = await UILStorage.loadVisitors();
+
+    let visitors = allVisitors;
+    if (stationId != null) {
+      visitors = allVisitors.filter(v => v.stationId === stationId);
+    }
 
     if (!visitors.length) {
-      statusEl.textContent = "No visitors yet – save one from the entry screen.";
+      statusEl.textContent = stationId != null
+        ? "No visitors yet for this station."
+        : "No visitors yet.";
       if (hrChart) {
         hrChart.destroy();
         hrChart = null;
@@ -34,26 +46,37 @@
     }
 
     const latest = visitors[visitors.length - 1];
-    const name = latest.name;
-    const resting = latest.resting;
-    const stress = latest.stress;
-    const relax = latest.relax;
+    const { name, resting, stress, relax } = latest;
+
+    const labels = ["Rest", "Stress", "Relax"];
+    const dataPoints = [resting, stress, relax].map(v =>
+      typeof v === "number" ? v : null
+    );
+
+    const numeric = dataPoints.filter(v => typeof v === "number");
+
+    if (!numeric.length) {
+      statusEl.textContent =
+        "Latest visitor: " + name + " – no heart rate values recorded yet.";
+      if (hrChart) {
+        hrChart.destroy();
+        hrChart = null;
+      }
+      return;
+    }
 
     statusEl.textContent =
-      "Latest visitor: " +
+      "Latest visitor (station " + (latest.stationId ?? "–") + "): " +
       name +
       " — Rest " +
-      resting +
+      (resting != null ? resting + " bpm" : "–") +
       " → Stress " +
-      stress +
+      (stress != null ? stress + " bpm" : "–") +
       " → Relax " +
-      relax +
-      " bpm";
+      (relax != null ? relax + " bpm" : "–");
 
-    const dataPoints = [resting, stress, relax];
-    const labels = ["Rest", "Stress", "Relax"];
-    const minVal = Math.min.apply(null, dataPoints);
-    const maxVal = Math.max.apply(null, dataPoints);
+    const minVal = Math.min.apply(null, numeric);
+    const maxVal = Math.max.apply(null, numeric);
     const padding = 5;
 
     const ctx = canvas.getContext("2d");
@@ -62,7 +85,7 @@
       hrChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: labels,
+          labels,
           datasets: [
             {
               label: "Heart rate (BPM)",
@@ -71,6 +94,7 @@
               borderWidth: 3,
               pointRadius: 5,
               pointHoverRadius: 7,
+              spanGaps: true,
               fill: false,
             },
           ],
@@ -78,7 +102,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          animation: { duration: 400 },
+          animation: { duration: 300 },
           scales: {
             y: {
               suggestedMin: minVal - padding,
@@ -109,20 +133,13 @@
 
   function setupGraphView() {
     console.log("[chart-view.js] setupGraphView called");
-    // Initial render
-    renderGraphView();
-
-    // Re-render whenever another window updates localStorage
-    window.addEventListener("storage", function (event) {
-      if (event.key === STORAGE_KEY) {
-        renderGraphView();
-      }
-    });
+    renderGraphView(); // initial
+    // poll every 2 seconds for updates
+    pollInterval = setInterval(renderGraphView, 2000);
   }
 
-  // Expose for the main app
   global.UILChartView = {
-    setupGraphView: setupGraphView,
+    setupGraphView,
   };
 })(window);
 
