@@ -64,14 +64,14 @@
     <p id="entryStatus"></p>
   </div>
 
-    <!-- GRAPH VIEW (small screen) -->
     <!-- GRAPH VIEW (clean minimal screen) -->
     <div id="graphView" style="display:none;">
-        <div class="graph-shell">
+        <div class="graph-layout">
+
+            <h1 class="graph-title">HEART RATE STORY</h1>
 
             <div class="graph-card">
             <div class="graph-header-row">
-                <!-- Left side intentionally empty for now -->
                 <div></div>
                 <div class="graph-badge">
                 <span class="graph-badge-dot"></span>
@@ -82,13 +82,11 @@
             <div class="graph-canvas-wrapper">
                 <canvas id="hrChart"></canvas>
             </div>
-
-            <!-- Status element kept for JS, but will be hidden via CSS -->
             <div id="graphStatus" class="graph-status-visitor" aria-live="polite"></div>
             </div>
-
         </div>
     </div>
+
 
 
 

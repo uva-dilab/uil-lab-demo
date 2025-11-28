@@ -15,41 +15,52 @@ body {
 
 /* --- GRAPH VIEW LAYOUT --- */
 
+/* Outer container for the graph screen */
 #graphView {
-  display: none; /* will be toggled by JS */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  align-items: center;       /* centre horizontally */
+  justify-content: flex-start; /* content towards top, not vertically centered */
+  min-height: 100vh;
+  padding: 32px 40px;
   box-sizing: border-box;
 }
 
-.graph-shell {
+/* Inner layout: title + card treated as one block */
+.graph-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;     /* no vertical centering */
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;               /* nice horizontal width for iPad landscape */
+  gap: 18px;                       /* space between title and chart */
+  margin: 0 auto;
+  text-align: center;
 }
 
+/* Big exhibition title */
 .graph-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 4px;
+  text-align: center;
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.graph-subtitle {
-  font-size: 0.9rem;
-  color: #9ca3af;
-  margin-bottom: 16px;
-}
-
+/* Card that holds the chart */
 .graph-card {
+  width: 100%;
   background: rgba(15, 23, 42, 0.95);
   border-radius: 20px;
-  padding: 16px 20px 20px;
+  padding: 16px 20px 18px;
   border: 1px solid rgba(148, 163, 184, 0.3);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
 }
 
+/* Header row inside the card: currently just the LIVE badge on the right */
 .graph-header-row {
   display: flex;
   justify-content: space-between;
@@ -57,17 +68,7 @@ body {
   margin-bottom: 10px;
 }
 
-.graph-status-label {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-.graph-status-visitor {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #e5e7eb;
-}
-
+/* LIVE badge */
 .graph-badge {
   display: inline-flex;
   align-items: center;
@@ -87,21 +88,34 @@ body {
   background: #22c55e;
 }
 
+/* The actual chart area: wide and not too tall */
 .graph-canvas-wrapper {
   margin-top: 8px;
   width: 100%;
-  height: 320px;
+  height: 280px;  /* 🔹 horizontal strip; adjust up/down if needed */
 }
 
-/* Small helper text at bottom */
+/* Hide the detailed status text under the graph (JS still updates for accessibility) */
+.graph-status-visitor {
+  display: none;
+}
+
+/* Optional: if you keep subtitles/footers in HTML later */
+.graph-subtitle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
 .graph-footer {
   margin-top: 10px;
   font-size: 0.8rem;
   color: #6b7280;
   text-align: right;
 }
-/* Hide the detailed status text under the graph (JS still updates it for accessibility) */
-.graph-status-visitor {
-  display: none;
+
+/* Larger axis labels & ticks inside the canvas */
+canvas {
+  font-size: 20px !important;
 }
 

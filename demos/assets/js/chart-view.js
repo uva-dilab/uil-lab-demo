@@ -16,7 +16,7 @@
 
   let hrChart = null;
   let pollInterval = null;
-  let lastDataSignature = null;
+  let lastDataSignature = null; // used to avoid re-animating unchanged data
 
   async function renderGraphView() {
     const statusEl = document.getElementById("graphStatus");
@@ -58,24 +58,17 @@
     const latest = visitors[visitors.length - 1];
     const { name, resting, stress, relax } = latest;
 
-    const labels = ["Rest", "Stress", "Relax"];
+    const labels = ["Resting", "Stress", "Relax"]; // X-axis emotional states
     const dataPoints = [resting, stress, relax].map((v) =>
       typeof v === "number" ? v : null
     );
     const numeric = dataPoints.filter((v) => typeof v === "number");
 
-    // Build a simple signature so that we render graph only when data changes
-    const signature = JSON.stringify({
-        id: latest.id,
-        stationId: latest.stationId,
-        data: dataPoints,
-    });
-
     if (!numeric.length) {
       statusEl.textContent =
         "Latest visitor: " +
-        name +
-        " – waiting for heart rate values (Rest, Stress, Relax).";
+        (name || "Visitor") +
+        " – waiting for heart rate values.";
       if (hrChart) {
         hrChart.destroy();
         hrChart = null;
@@ -83,6 +76,7 @@
       return;
     }
 
+    // Keep detailed text for accessibility / debugging (even if hidden in CSS)
     statusEl.innerHTML =
       'Latest visitor <strong>' +
       (name || "Visitor") +
@@ -93,21 +87,26 @@
       " → Relax " +
       (relax != null ? relax + " bpm" : "–");
 
+    // Signature so we only update the chart when data really changes
+    const signature = JSON.stringify({
+      id: latest.id,
+      stationId: latest.stationId,
+      data: dataPoints,
+    });
+
     const minVal = Math.min.apply(null, numeric);
     const maxVal = Math.max.apply(null, numeric);
     const padding = 5;
 
-    //If nothing has changed since last render, dont do anything!
+    // If nothing has changed since last render, do nothing (avoid re-animation)
     if (hrChart && signature === lastDataSignature) {
-        // We still update the text
-        // but avoid re-animation!
-        lastDataSignature = signature;
-        return;
+      lastDataSignature = signature;
+      return;
     }
 
     const ctx = canvas.getContext("2d");
 
-    // Nice gradient for the line fill
+    // Gradient fill under the line
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, "rgba(34, 197, 94, 0.45)");
     gradient.addColorStop(1, "rgba(34, 197, 94, 0.03)");
@@ -117,9 +116,9 @@
       data: dataPoints,
       tension: 0.35,
       borderWidth: 3,
-      pointRadius: 6,
-      pointHoverRadius: 8,
-      pointHitRadius: 12,
+      pointRadius: 8,
+      pointHoverRadius: 10,
+      pointHitRadius: 14,
       spanGaps: true,
       fill: true,
       borderColor: "rgba(34, 197, 94, 0.95)", // neon-ish green
@@ -140,48 +139,79 @@
           responsive: true,
           maintainAspectRatio: false,
           animation: {
-            duration: 400,
+            duration: 600,
           },
-          scales: {
-            y: {
-              suggestedMin: minVal - padding,
-              suggestedMax: maxVal + padding,
-              ticks: {
-                color: "#9ca3af",
-                font: { size: 11 },
-              },
-              grid: {
-                color: "rgba(148, 163, 184, 0.25)",
-              },
-            },
-            x: {
-              ticks: {
-                color: "#9ca3af",
-                font: { size: 11 },
-              },
-              grid: {
-                display: false,
-              },
-            },
-          },
+
           plugins: {
+            // Chart-internal title (you also have the big H1 outside)
+            title: {
+              display: false, // we use the page H1 as main title
+              text: "HEART RATE STORY",
+              color: "#ffffff",
+              font: {
+                size: 28,
+                weight: "bold",
+                family: "system-ui",
+              },
+              padding: { top: 10, bottom: 20 },
+            },
+
             legend: {
               display: false,
             },
+
             tooltip: {
               backgroundColor: "rgba(15,23,42,0.95)",
               borderColor: "rgba(148,163,184,0.6)",
               borderWidth: 1,
               titleColor: "#e5e7eb",
               bodyColor: "#e5e7eb",
-              padding: 8,
+              bodyFont: { size: 18 },
+              titleFont: { size: 20 },
+              padding: 10,
               displayColors: false,
               callbacks: {
                 label: function (context) {
                   const label = context.label || "";
                   const val = context.formattedValue || "";
-                  return label + ": " + val + " bpm";
+                  return label + ": " + val + " BPM";
                 },
+              },
+            },
+          },
+
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: "Heart Rate (BPM)", // Y-axis label
+                color: "#ffffff",
+                font: { size: 22, weight: "600" },
+              },
+              ticks: {
+                color: "#d1d5db",
+                font: { size: 18, weight: "600" },
+              },
+              grid: {
+                color: "rgba(200,200,220,0.2)",
+              },
+              suggestedMin: minVal - padding,
+              suggestedMax: maxVal + padding,
+            },
+
+            x: {
+              title: {
+                display: true,
+                text: "Emotional State", // X-axis label
+                color: "#ffffff",
+                font: { size: 22, weight: "600" },
+              },
+              ticks: {
+                color: "#ffffff",
+                font: { size: 20, weight: "700" },
+              },
+              grid: {
+                display: false,
               },
             },
           },
@@ -198,13 +228,13 @@
       hrChart.update();
     }
 
-    // Remember what was just drawn
+    // Remember what we just drew so we don't re-animate identical data
     lastDataSignature = signature;
   }
 
   function setupGraphView() {
     console.log("[chart-view.js] setupGraphView called");
-    renderGraphView(); // initial
+    renderGraphView(); // initial render
 
     if (pollInterval) clearInterval(pollInterval);
     pollInterval = setInterval(renderGraphView, 2000);
