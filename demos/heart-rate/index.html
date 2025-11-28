@@ -65,37 +65,31 @@
   </div>
 
     <!-- GRAPH VIEW (small screen) -->
-  <div id="graphView" style="display:none;">
-    <div class="graph-shell">
-      <div class="graph-title">Heart Rate Story</div>
-      <div class="graph-subtitle">
-        Rest → Stress sound → Relax sound, for the latest visitor on this station.
-      </div>
+    <!-- GRAPH VIEW (clean minimal screen) -->
+    <div id="graphView" style="display:none;">
+        <div class="graph-shell">
 
-      <div class="graph-card">
-        <div class="graph-header-row">
-          <div>
-            <div class="graph-status-label">Current visitor</div>
-            <div id="graphStatus" class="graph-status-visitor">
-              Waiting for data…
+            <div class="graph-card">
+            <div class="graph-header-row">
+                <!-- Left side intentionally empty for now -->
+                <div></div>
+                <div class="graph-badge">
+                <span class="graph-badge-dot"></span>
+                Live
+                </div>
             </div>
-          </div>
-          <div class="graph-badge">
-            <span class="graph-badge-dot"></span>
-            Live update
-          </div>
-        </div>
 
-        <div class="graph-canvas-wrapper">
-          <canvas id="hrChart"></canvas>
-        </div>
+            <div class="graph-canvas-wrapper">
+                <canvas id="hrChart"></canvas>
+            </div>
 
-        <div class="graph-footer">
-          Screen configured for station via <code>?station=1</code> or <code>?station=2</code>.
+            <!-- Status element kept for JS, but will be hidden via CSS -->
+            <div id="graphStatus" class="graph-status-visitor" aria-live="polite"></div>
+            </div>
+
         </div>
-      </div>
     </div>
-  </div>
+
 
 
   <!-- SCOREBOARD VIEW (large screen) -->
