@@ -16,6 +16,7 @@
 
   let hrChart = null;
   let pollInterval = null;
+  let lastDataSignature = null;
 
   async function renderGraphView() {
     const statusEl = document.getElementById("graphStatus");
@@ -63,6 +64,13 @@
     );
     const numeric = dataPoints.filter((v) => typeof v === "number");
 
+    // Build a simple signature so that we render graph only when data changes
+    const signature = JSON.stringify({
+        id: latest.id,
+        stationId: latest.stationId,
+        data: dataPoints,
+    });
+
     if (!numeric.length) {
       statusEl.textContent =
         "Latest visitor: " +
@@ -88,6 +96,15 @@
     const minVal = Math.min.apply(null, numeric);
     const maxVal = Math.max.apply(null, numeric);
     const padding = 5;
+
+    //If nothing has changed since last render, dont do anything!
+    if (hrChart && signature === lastDataSignature) {
+        // We still update the text
+        // but avoid re-animation!
+        lastDataSignature = signature;
+        return;
+    }
+
     const ctx = canvas.getContext("2d");
 
     // Nice gradient for the line fill
@@ -180,6 +197,9 @@
       hrChart.options.scales.y.suggestedMax = maxVal + padding;
       hrChart.update();
     }
+
+    // Remember what was just drawn
+    lastDataSignature = signature;
   }
 
   function setupGraphView() {
