@@ -1,107 +1,3 @@
-//// scoreboard-view.js
-//// Everything related to the scoreboard screen (shared display)
-
-//(function (global) {
-  //const UILStorage = global.UILStorage;
-  //if (!UILStorage) {
-    //console.error("[scoreboard-view] UILStorage not found. Make sure storage.js is loaded first.");
-    //return;
-  //}
-
-  //function formatDelta(rest, value) {
-    //if (typeof rest !== "number" || typeof value !== "number") return "–";
-    //const diff = value - rest;
-    //const sign = diff > 0 ? "+" : diff < 0 ? "−" : "±0";
-    //return sign + Math.abs(diff).toFixed(0);
-  //}
-
-  //async function renderScoreboardView() {
-    //const container = document.getElementById("scoreboardContainer");
-    //if (!container) {
-      //console.warn("[scoreboard-view] #scoreboardContainer not found in DOM.");
-      //return;
-    //}
-
-    //container.textContent = "Loading…";
-
-    //let visitors = [];
-    //try {
-      //visitors = await UILStorage.loadVisitors();
-    //} catch (e) {
-      //console.error("[scoreboard-view] Failed to load visitors:", e);
-      //container.textContent = "Error loading data from server.";
-      //return;
-    //}
-
-    //if (!visitors.length) {
-      //container.textContent = "No visitors yet.";
-      //return;
-    //}
-
-    //// Sort by createdAt (newest first)
-    //visitors.sort((a, b) => {
-      //if (!a.createdAt || !b.createdAt) return 0;
-      //return a.createdAt < b.createdAt ? 1 : -1;
-    //});
-
-    //let html = `
-      //<table style="border-collapse: collapse; width: 100%; max-width: 900px;">
-        //<thead>
-          //<tr>
-            //<th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ccc;">Visitor</th>
-            //<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Station</th>
-            //<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Rest</th>
-            //<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Stress</th>
-            ////<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Δ Stress–Rest</th>
-            //<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Relax</th>
-            ////<th style="text-align:right; padding:4px 8px; border-bottom:1px solid #ccc;">Δ Relax–Rest</th>
-          //</tr>
-        //</thead>
-        //<tbody>
-    //`;
-
-    //visitors.forEach((v) => {
-      //const rest = typeof v.resting === "number" ? v.resting : null;
-      //const stress = typeof v.stress === "number" ? v.stress : null;
-      //const relax = typeof v.relax === "number" ? v.relax : null;
-
-      //const stressDelta = formatDelta(rest, stress);
-      //const relaxDelta = formatDelta(rest, relax);
-
-      //html += `
-        //<tr>
-          //<td style="text-align:left; padding:4px 8px; border-bottom:1px solid #eee;">${v.name || "Visitor"}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${v.stationId ?? "–"}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${rest ?? "–"}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${stress ?? "–"}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${stressDelta}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${relax ?? "–"}</td>
-          //<td style="text-align:right; padding:4px 8px; border-bottom:1px solid #eee;">${relaxDelta}</td>
-        //</tr>
-      //`;
-    //});
-
-    //html += `
-        //</tbody>
-      //</table>
-    //`;
-
-    //container.innerHTML = html;
-  //}
-
-  //function setupScoreboardView() {
-    //console.log("[scoreboard-view] setupScoreboardView called");
-    //renderScoreboardView();
-    //// Update every 3 seconds to pick up new visitors
-    //setInterval(renderScoreboardView, 3000);
-  //}
-
-  //// Expose to main app
-  //global.UILScoreboardView = {
-    //setupScoreboardView,
-  //};
-//})(window);
-
 // scoreboard-view.js
 // Everything related to the scoreboard screen (shared display)
 
@@ -110,6 +6,22 @@
   if (!UILStorage) {
     console.error("[scoreboard-view] UILStorage not found. Make sure storage.js is loaded first.");
     return;
+  }
+
+  function classifyRecovery(rest, relax) {
+    if (typeof rest !== "number" || typeof relax !== "number") {
+      return "";
+    }
+    const delta = relax - rest;
+
+    // Simple thresholds for visual quality of recovery
+    if (delta <= -3) {
+      return "relax-good";       // recovered below baseline
+    } else if (Math.abs(delta) < 3) {
+      return "relax-flat";       // roughly back to baseline
+    } else {
+      return "relax-elevated";   // still noticeably elevated
+    }
   }
 
   async function renderScoreboardView() {
@@ -142,17 +54,21 @@
     });
 
     let html = `
-      <table style="border-collapse: collapse; width: 100%; max-width: 900px; font-size: 18px;">
-        <thead>
-          <tr>
-            <th style="text-align:left;  padding:8px 12px; border-bottom:1px solid #4b5563;">Visitor</th>
-            <th style="text-align:right; padding:8px 12px; border-bottom:1px solid #4b5563;">Station</th>
-            <th style="text-align:right; padding:8px 12px; border-bottom:1px solid #4b5563;">Baseline (Rest)</th>
-            <th style="text-align:right; padding:8px 12px; border-bottom:1px solid #4b5563;">Stress</th>
-            <th style="text-align:right; padding:8px 12px; border-bottom:1px solid #4b5563;">Recovery (Relax)</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="scoreboard-shell">
+        <h2 class="score-title">UIL Heart-Rate Scoreboard</h2>
+        <p class="score-subtitle">Baseline, stress, and recovery heart rates from visitors</p>
+        <div class="scoreboard-table-wrapper">
+          <table class="scoreboard-table">
+            <thead>
+              <tr>
+                <th class="score-th score-th-name">Visitor</th>
+                <th class="score-th score-th-station">Station</th>
+                <th class="score-th score-th-number">Baseline (Rest)</th>
+                <th class="score-th score-th-number">Stress</th>
+                <th class="score-th score-th-number">Recovery (Relax)</th>
+              </tr>
+            </thead>
+            <tbody>
     `;
 
     visitors.forEach((v, index) => {
@@ -160,24 +76,34 @@
       const stress = typeof v.stress === "number" ? v.stress : null;
       const relax = typeof v.relax === "number" ? v.relax : null;
 
-      // Slight zebra striping for readability
-      const rowBackground = index % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.65)";
+      const stationLabel =
+        v.stationId != null ? `Station ${v.stationId}` : "—";
+
+      const recoveryClass = classifyRecovery(rest, relax);
+
+      const rowClasses = ["scoreboard-row"];
+      if (index % 2 === 1) {
+        rowClasses.push("scoreboard-row-alt");
+      }
+      if (index === 0) {
+        rowClasses.push("latest-row");
+      }
 
       html += `
-        <tr style="background:${rowBackground};">
-          <td style="text-align:left;  padding:8px 12px; border-bottom:1px solid #1f2937;">
+        <tr class="${rowClasses.join(" ")}">
+          <td class="score-td score-name">
             ${v.name || "Visitor"}
           </td>
-          <td style="text-align:right; padding:8px 12px; border-bottom:1px solid #1f2937;">
-            ${v.stationId ?? "–"}
+          <td class="score-td score-station">
+            <span class="station-pill">${stationLabel}</span>
           </td>
-          <td style="text-align:right; padding:8px 12px; border-bottom:1px solid #1f2937;">
+          <td class="score-td score-number">
             ${rest ?? "–"}
           </td>
-          <td style="text-align:right; padding:8px 12px; border-bottom:1px solid #1f2937;">
+          <td class="score-td score-number">
             ${stress ?? "–"}
           </td>
-          <td style="text-align:right; padding:8px 12px; border-bottom:1px solid #1f2937;">
+          <td class="score-td score-number score-relax ${recoveryClass}">
             ${relax ?? "–"}
           </td>
         </tr>
@@ -185,8 +111,10 @@
     });
 
     html += `
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
     `;
 
     container.innerHTML = html;
