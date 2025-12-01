@@ -8,6 +8,9 @@
     return;
   }
 
+  // Remember last data signature so we only re-render when data actually changes
+  let lastSignature = null;
+
   function classifyRecovery(rest, relax) {
     if (typeof rest !== "number" || typeof relax !== "number") {
       return "";
@@ -31,7 +34,10 @@
       return;
     }
 
-    container.textContent = "Loading…";
+    // Only show "Loading…" before the very first successful render
+    if (!lastSignature && container.innerHTML.trim() === "") {
+      container.textContent = "Loading…";
+    }
 
     let visitors = [];
     try {
@@ -44,6 +50,7 @@
 
     if (!visitors.length) {
       container.textContent = "No visitors yet.";
+      lastSignature = null;
       return;
     }
 
@@ -52,6 +59,23 @@
       if (!a.createdAt || !b.createdAt) return 0;
       return a.createdAt < b.createdAt ? 1 : -1;
     });
+
+    // Build a compact signature of the data so we can detect changes
+    const signature = JSON.stringify(
+      visitors.map((v) => ({
+        id: v.id,
+        stationId: v.stationId,
+        resting: v.resting,
+        stress: v.stress,
+        relax: v.relax,
+        createdAt: v.createdAt,
+      }))
+    );
+
+    // If nothing changed since last time, skip DOM work (no flashing)
+    if (signature === lastSignature) {
+      return;
+    }
 
     let html = `
       <div class="scoreboard-shell">
@@ -118,12 +142,13 @@
     `;
 
     container.innerHTML = html;
+    lastSignature = signature;
   }
 
   function setupScoreboardView() {
     console.log("[scoreboard-view] setupScoreboardView called");
     renderScoreboardView();
-    // Update every 3 seconds to pick up new visitors
+    // Update every 3 seconds to pick up new visitors (but now without flicker)
     setInterval(renderScoreboardView, 3000);
   }
 
