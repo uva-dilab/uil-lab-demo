@@ -10,8 +10,6 @@
   <link rel="stylesheet" href="../assets/css/heart-rate.css" />
   <link rel="stylesheet" href="../assets/css/scoreboard.css">
 
-
-
   <!-- Our JS modules (order matters!) -->
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/chart-view.js"></script>
@@ -21,11 +19,10 @@
 <body>
   <!-- ENTRY VIEW (for facilitator) -->
   <div id="entryView" style="display:none;">
-    <h1>Data Entry (Facilitator)</h1>
-    <p>Use this screen to enter heart rates for each visitor as you go through the 3 steps.</p>
+    <h1>Data Entry (Facilitator View)</h1>
 
     <label>
-      Visitor name / code:
+      Visitor ID :
       <input id="nameInput" type="text" placeholder="e.g. Anna, S3" />
     </label>
     <br /><br />
@@ -40,7 +37,7 @@
       Resting HR:
       <input id="restInput" type="number" placeholder="e.g. 72" />
     </label>
-    <button id="saveRestBtn">Save Rest HR</button>
+    <button id="saveRestBtn">Save</button>
 
     <br /><br />
 
@@ -49,7 +46,7 @@
       Stress HR:
       <input id="stressInput" type="number" placeholder="e.g. 88" />
     </label>
-    <button id="saveStressBtn">Save Stress HR</button>
+    <button id="saveStressBtn">Save</button>
 
     <br /><br />
 
@@ -58,10 +55,10 @@
       Relax HR:
       <input id="relaxInput" type="number" placeholder="e.g. 76" />
     </label>
-    <button id="saveRelaxBtn">Save Relax HR</button>
+    <button id="saveRelaxBtn">Save</button>
 
     <br /><br />
-    <button id="finishVisitorBtn">Finish visitor</button>
+    <button id="finishVisitorBtn">Finish</button>
 
     <p id="entryStatus"></p>
   </div>
