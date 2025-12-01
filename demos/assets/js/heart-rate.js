@@ -72,27 +72,97 @@
     const saveRestBtn = document.getElementById("saveRestBtn");
     const saveStressBtn = document.getElementById("saveStressBtn");
     const saveRelaxBtn = document.getElementById("saveRelaxBtn");
-    const finishBtn = document.getElementById("finishVisitorBtn");
     const statusEl = document.getElementById("entryStatus");
 
-    if (!startBtn || !saveRestBtn || !saveStressBtn || !saveRelaxBtn || !finishBtn || !statusEl) {
+    const nameEl = document.getElementById("nameInput");
+    const restEl = document.getElementById("restInput");
+    const stressEl = document.getElementById("stressInput");
+    const relaxEl = document.getElementById("relaxInput");
+
+    if (!startBtn || !saveRestBtn || !saveStressBtn || !saveRelaxBtn || !statusEl) {
       console.warn("[heart-rate.js] Entry elements not found:", {
         startBtn,
         saveRestBtn,
         saveStressBtn,
         saveRelaxBtn,
-        finishBtn,
         statusEl,
       });
       return;
     }
 
+    // Optional: station label in header, if present
+    const stationLabelEl = document.getElementById("entryStationLabel");
+    if (stationLabelEl) {
+      stationLabelEl.textContent = stationId ? `Station ${stationId}` : "Station";
+    }
+
     console.log("[heart-rate.js] setupEntryView attached (station =", stationId, ")");
 
-    startBtn.addEventListener("click", async function () {
-      const nameEl = document.getElementById("nameInput");
-      const name = (nameEl && nameEl.value ? nameEl.value : "").trim() || "Visitor";
+    async function saveRest() {
+      if (!currentVisitor) {
+        statusEl.textContent = "";
+        return;
+      }
+      const rest = parseFloat(restEl && restEl.value);
+      if (isNaN(rest)) {
+        statusEl.textContent = "";
+        return;
+      }
+      currentVisitor.resting = rest;
+      await UILStorage.upsertVisitor(currentVisitor);
+      statusEl.textContent = "";
+      if (restEl) restEl.value = "";
+      updateCurrentVisitorLabel();
+      if (stressEl) stressEl.focus();
+    }
 
+    async function saveStress() {
+      if (!currentVisitor) {
+        statusEl.textContent = "";
+        return;
+      }
+      const stress = parseFloat(stressEl && stressEl.value);
+      if (isNaN(stress)) {
+        statusEl.textContent = "";
+        return;
+      }
+      currentVisitor.stress = stress;
+      await UILStorage.upsertVisitor(currentVisitor);
+      statusEl.textContent = "";
+      if (stressEl) stressEl.value = "";
+      updateCurrentVisitorLabel();
+      if (relaxEl) relaxEl.focus();
+    }
+
+    async function saveRelax(autoFinish = true) {
+      if (!currentVisitor) {
+        statusEl.textContent = "";
+        return;
+      }
+      const relax = parseFloat(relaxEl && relaxEl.value);
+      if (isNaN(relax)) {
+        statusEl.textContent = "";
+        return;
+      }
+      currentVisitor.relax = relax;
+      await UILStorage.upsertVisitor(currentVisitor);
+      if (relaxEl) relaxEl.value = "";
+      updateCurrentVisitorLabel();
+
+      if (autoFinish) {
+        statusEl.textContent = "";
+        currentVisitor = null;
+        updateCurrentVisitorLabel();
+        if (nameEl) nameEl.focus();
+      } else {
+        statusEl.textContent = "";
+      }
+    }
+
+    // BUTTON HANDLERS
+
+    startBtn.addEventListener("click", async function () {
+      const name = (nameEl && nameEl.value ? nameEl.value : "").trim() || "Visitor";
       const id = Date.now().toString() + "-" + (stationId || "X");
 
       currentVisitor = {
@@ -106,76 +176,54 @@
       };
 
       await UILStorage.upsertVisitor(currentVisitor);
-      statusEl.textContent =
-        'Started new visitor "' + name + '". Now measure resting heart rate.';
+      statusEl.textContent = "";
       updateCurrentVisitorLabel();
+
+      if (restEl) restEl.focus();
     });
 
-    saveRestBtn.addEventListener("click", async function () {
-      if (!currentVisitor) {
-        statusEl.textContent = "Start a visitor first.";
-        return;
-      }
-      const restEl = document.getElementById("restInput");
-      const rest = parseFloat(restEl && restEl.value);
-      if (isNaN(rest)) {
-        statusEl.textContent = "Enter a valid Rest HR.";
-        return;
-      }
-      currentVisitor.resting = rest;
-      await UILStorage.upsertVisitor(currentVisitor);
-      statusEl.textContent = "Saved Rest HR (" + rest + " bpm). Now play the stress sound.";
-      if (restEl) restEl.value = "";
-      updateCurrentVisitorLabel();
+    saveRestBtn.addEventListener("click", function () {
+      saveRest();
     });
 
-    saveStressBtn.addEventListener("click", async function () {
-      if (!currentVisitor) {
-        statusEl.textContent = "Start a visitor first.";
-        return;
-      }
-      const stressEl = document.getElementById("stressInput");
-      const stress = parseFloat(stressEl && stressEl.value);
-      if (isNaN(stress)) {
-        statusEl.textContent = "Enter a valid Stress HR.";
-        return;
-      }
-      currentVisitor.stress = stress;
-      await UILStorage.upsertVisitor(currentVisitor);
-      statusEl.textContent = "Saved Stress HR (" + stress + " bpm). Now play the relax sound.";
-      if (stressEl) stressEl.value = "";
-      updateCurrentVisitorLabel();
+    saveStressBtn.addEventListener("click", function () {
+      saveStress();
     });
 
-    saveRelaxBtn.addEventListener("click", async function () {
-      if (!currentVisitor) {
-        statusEl.textContent = "Start a visitor first.";
-        return;
-      }
-      const relaxEl = document.getElementById("relaxInput");
-      const relax = parseFloat(relaxEl && relaxEl.value);
-      if (isNaN(relax)) {
-        statusEl.textContent = "Enter a valid Relax HR.";
-        return;
-      }
-      currentVisitor.relax = relax;
-      await UILStorage.upsertVisitor(currentVisitor);
-      statusEl.textContent =
-        "Saved Relax HR (" + relax + " bpm). You can now finish this visitor.";
-      if (relaxEl) relaxEl.value = "";
-      updateCurrentVisitorLabel();
+    saveRelaxBtn.addEventListener("click", function () {
+      // Manual save, still auto-finish by default
+      saveRelax(true);
     });
 
-    finishBtn.addEventListener("click", function () {
-      if (!currentVisitor) {
-        statusEl.textContent = "No active visitor to finish.";
-        return;
-      }
-      statusEl.textContent =
-        'Finished visitor "' + currentVisitor.name + '". All values (Rest/Stress/Relax) saved.';
-      currentVisitor = null;
-      updateCurrentVisitorLabel();
-    });
+    // ENTER-KEY SHORTCUTS FOR FASTER FLOW
+
+    if (restEl) {
+      restEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveRest();
+        }
+      });
+    }
+
+    if (stressEl) {
+      stressEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveStress();
+        }
+      });
+    }
+
+    if (relaxEl) {
+      relaxEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          // Enter on relax = save + auto-finish
+          saveRelax(true);
+        }
+      });
+    }
 
     updateCurrentVisitorLabel();
   }
