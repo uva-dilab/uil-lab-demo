@@ -16,7 +16,7 @@
 
   let hrChart = null;
   let pollInterval = null;
-  let lastDataSignature = null; // used to avoid re-animating unchanged data
+  let lastDataSignature = null; // avoid reanimating identical data
 
   async function renderGraphView() {
     const statusEl = document.getElementById("graphStatus");
@@ -38,10 +38,9 @@
       return;
     }
 
-    let visitors = allVisitors;
-    if (stationId != null) {
-      visitors = allVisitors.filter((v) => v.stationId === stationId);
-    }
+    let visitors = stationId != null
+      ? allVisitors.filter((v) => v.stationId === stationId)
+      : allVisitors;
 
     if (!visitors.length) {
       statusEl.textContent =
@@ -58,7 +57,7 @@
     const latest = visitors[visitors.length - 1];
     const { name, resting, stress, relax } = latest;
 
-    const labels = ["Resting", "Stress", "Relax"]; // X-axis emotional states
+    const labels = ["Resting", "Stress", "Relax"];
     const dataPoints = [resting, stress, relax].map((v) =>
       typeof v === "number" ? v : null
     );
@@ -76,37 +75,26 @@
       return;
     }
 
-    // Keep detailed text for accessibility / debugging (even if hidden in CSS)
     statusEl.innerHTML =
-      'Latest visitor <strong>' +
-      (name || "Visitor") +
-      "</strong> – Rest " +
-      (resting != null ? resting + " bpm" : "–") +
-      " → Stress " +
-      (stress != null ? stress + " bpm" : "–") +
-      " → Relax " +
-      (relax != null ? relax + " bpm" : "–");
+      `Latest visitor <strong>${name || "Visitor"}</strong> – ` +
+      `Rest ${resting ?? "–"} → Stress ${stress ?? "–"} → Relax ${relax ?? "–"} BPM`;
 
-    // Signature so we only update the chart when data really changes
     const signature = JSON.stringify({
       id: latest.id,
       stationId: latest.stationId,
       data: dataPoints,
     });
 
-    const minVal = Math.min.apply(null, numeric);
-    const maxVal = Math.max.apply(null, numeric);
-    const padding = 5;
+    const minVal = Math.min(...numeric);
+    const maxVal = Math.max(...numeric);
 
-    // If nothing has changed since last render, do nothing (avoid re-animation)
-    if (hrChart && signature === lastDataSignature) {
-      lastDataSignature = signature;
-      return;
-    }
+    // 🔥 Dynamic breathing room — prevents first point from touching Y-axis
+    const offset = Math.max(8, Math.round((maxVal - minVal) * 0.15));
+
+    if (hrChart && signature === lastDataSignature) return;
 
     const ctx = canvas.getContext("2d");
 
-    // Gradient fill under the line
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, "rgba(34, 197, 94, 0.45)");
     gradient.addColorStop(1, "rgba(34, 197, 94, 0.03)");
@@ -121,11 +109,20 @@
       pointHitRadius: 14,
       spanGaps: true,
       fill: true,
-      borderColor: "rgba(34, 197, 94, 0.95)", // neon-ish green
+      borderColor: "rgba(34, 197, 94, 0.95)",
       backgroundColor: gradient,
+     // ✨ Animated, glowing, layered points
       pointBackgroundColor: "#22c55e",
       pointBorderColor: "#0f172a",
-      pointBorderWidth: 2,
+      pointBorderWidth: 3,
+      pointStyle: "circle",
+      pointRadius: 10,
+      hoverRadius: 14,
+      pointHoverBorderWidth: 4,
+
+      //pointBackgroundColor: "#22c55e",
+      //pointBorderColor: "#0f172a",
+      //pointBorderWidth: 2,
     };
 
     if (!hrChart) {
@@ -138,28 +135,9 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          animation: {
-            duration: 600,
-          },
-
+          animation: { duration: 600 },
           plugins: {
-            // Chart-internal title (you also have the big H1 outside)
-            title: {
-              display: false, // we use the page H1 as main title
-              text: "HEART RATE STORY",
-              color: "#ffffff",
-              font: {
-                size: 28,
-                weight: "bold",
-                family: "system-ui",
-              },
-              padding: { top: 10, bottom: 20 },
-            },
-
-            legend: {
-              display: false,
-            },
-
+            legend: { display: false },
             tooltip: {
               backgroundColor: "rgba(15,23,42,0.95)",
               borderColor: "rgba(148,163,184,0.6)",
@@ -171,77 +149,62 @@
               padding: 10,
               displayColors: false,
               callbacks: {
-                label: function (context) {
-                  const label = context.label || "";
-                  const val = context.formattedValue || "";
-                  return label + ": " + val + " BPM";
-                },
+                label: (ctx) => `${ctx.label}: ${ctx.formattedValue} BPM`,
               },
             },
           },
 
+          // 📌 Dynamic Y-axis spacing incorporated here
           scales: {
             y: {
               title: {
                 display: true,
-                text: "Heart Rate (BPM)", // Y-axis label
+                text: "Heart Rate (BPM)",
                 color: "#E5E7EB",
                 font: { size: 22, weight: "600" },
               },
               ticks: {
                 color: "#d1d5db",
                 font: { size: 18, weight: "600" },
+                padding: 10,         // visual gap between labels & graph
               },
-              grid: {
-                color: "rgba(200,200,220,0.2)",
-              },
-              suggestedMin: minVal - padding,
-              suggestedMax: maxVal + padding,
+              grid: { color: "rgba(200,200,220,0.2)" },
+              suggestedMin: minVal - offset,       // 💚 prevents hugging bottom
+              suggestedMax: maxVal + offset * 0.6,
             },
 
             x: {
               title: {
                 display: true,
-                text: "Emotional State", // X-axis label
+                text: "Emotional State",
                 color: "#E5E7EB",
                 font: { size: 22, weight: "600" },
               },
-              ticks: {
-                color: "#ffffff",
-                font: { size: 20, weight: "700" },
-              },
-              grid: {
-                display: false,
-              },
+              ticks: { color: "#ffffff", font: { size: 20, weight: "700" }},
+              grid: { display: false },
             },
           },
         },
       });
     } else {
+      // Update data only when changed
       hrChart.data.labels = labels;
-      hrChart.data.datasets[0] = {
-        ...hrChart.data.datasets[0],
-        ...datasetBase,
-      };
-      hrChart.options.scales.y.suggestedMin = minVal - padding;
-      hrChart.options.scales.y.suggestedMax = maxVal + padding;
+      hrChart.data.datasets[0] = { ...hrChart.data.datasets[0], ...datasetBase };
+      hrChart.options.scales.y.suggestedMin = minVal - offset;
+      hrChart.options.scales.y.suggestedMax = maxVal + offset * 0.6;
       hrChart.update();
     }
 
-    // Remember what we just drew so we don't re-animate identical data
     lastDataSignature = signature;
   }
 
   function setupGraphView() {
     console.log("[chart-view.js] setupGraphView called");
-    renderGraphView(); // initial render
-
+    renderGraphView();
     if (pollInterval) clearInterval(pollInterval);
     pollInterval = setInterval(renderGraphView, 2000);
   }
 
-  global.UILChartView = {
-    setupGraphView,
-  };
+  global.UILChartView = { setupGraphView };
 })(window);
 
