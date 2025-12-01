@@ -138,6 +138,12 @@
             </tbody>
           </table>
         </div>
+        <div class="score-legend">
+          <span class="score-legend-label">Recovery legend:</span>
+          <span class="score-legend-pill legend-good">Good recovery</span>
+          <span class="score-legend-pill legend-flat">Back to baseline</span>
+          <span class="score-legend-pill legend-elevated">Still elevated</span>
+        </div>
       </div>
     `;
 
@@ -157,4 +163,5 @@
     setupScoreboardView,
   };
 })(window);
+
 
