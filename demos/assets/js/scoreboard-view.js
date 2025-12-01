@@ -79,7 +79,7 @@
 
     let html = `
       <div class="scoreboard-shell">
-        <h2 class="score-title">UIL Heart-Rate Scoreboard</h2>
+        <h2 class="score-title">Visitors' Heart-rate</h2>
         <p class="score-subtitle">Baseline, stress, and recovery heart rates from visitors</p>
         <div class="scoreboard-table-wrapper">
           <table class="scoreboard-table">

@@ -1,6 +1,5 @@
 /* ---------------------------------------------------------
-   SCOREBOARD STYLESHEET — dedicated, modular, clean
-   Drop this in /assets/css/scoreboard.css
+   SCOREBOARD STYLESHEET
 --------------------------------------------------------- */
 
 /* Layout wrapper for full-screen exhibition display */
@@ -114,18 +113,10 @@
 
 /* Highlight most recent visitor */
 .latest-row {
-  position: relative;
-  background: radial-gradient(circle at 0% 50%, rgba(34, 197, 94, 0.23), rgba(15, 23, 42, 0.9));
+  background: radial-gradient(circle at 0% 50%, rgba(34, 197, 94, 0.18), rgba(15, 23, 42, 0.9));
+  box-shadow: inset 4px 0 0 rgbba(34, 197, 94, 0.9);
 }
 
-.latest-row::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 4px;
-  left: 0;
-  background: linear-gradient(to bottom, rgba(34, 197, 94, 0.9), rgba(52, 211, 153, 0.5));
-}
 
 /* ---------------------------------------------------------
    Station badge
@@ -168,4 +159,3 @@
   .score-td { font-size: 1rem; padding: 10px 12px; }
   .score-title { font-size: 1.8rem; }
 }
-
