@@ -59,6 +59,8 @@
       if (!a.createdAt || !b.createdAt) return 0;
       return a.createdAt < b.createdAt ? 1 : -1;
     });
+    // keep only last 10
+    const visibleVisitors = visitors.slice(0, 10);
 
     // Build a compact signature of the data so we can detect changes
     const signature = JSON.stringify(
@@ -95,7 +97,7 @@
             <tbody>
     `;
 
-    visitors.forEach((v, index) => {
+    visibleVisitors.forEach((v, index) => {
       const rest = typeof v.resting === "number" ? v.resting : null;
       const stress = typeof v.stress === "number" ? v.stress : null;
       const relax = typeof v.relax === "number" ? v.relax : null;
