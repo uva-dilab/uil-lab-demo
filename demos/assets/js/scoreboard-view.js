@@ -59,7 +59,8 @@
       if (!a.createdAt || !b.createdAt) return 0;
       return a.createdAt < b.createdAt ? 1 : -1;
     });
-    // keep only last 10
+
+    // keep only last 10 for display
     const visibleVisitors = visitors.slice(0, 10);
 
     // Build a compact signature of the data so we can detect changes
@@ -79,9 +80,38 @@
       return;
     }
 
+    // Compute highlight rows among visible visitors
+    let bestStressIndex = null;
+    let bestStressDelta = -Infinity;
+
+    let bestRecoveryIndex = null;
+    let bestRecoveryDelta = Infinity;
+
+    visibleVisitors.forEach((v, index) => {
+      const rest = typeof v.resting === "number" ? v.resting : null;
+      const stress = typeof v.stress === "number" ? v.stress : null;
+      const relax = typeof v.relax === "number" ? v.relax : null;
+
+      if (typeof rest === "number" && typeof stress === "number") {
+        const deltaStress = stress - rest;
+        if (deltaStress > bestStressDelta) {
+          bestStressDelta = deltaStress;
+          bestStressIndex = index;
+        }
+      }
+
+      if (typeof rest === "number" && typeof relax === "number") {
+        const deltaRecovery = relax - rest;
+        if (deltaRecovery < bestRecoveryDelta) {
+          bestRecoveryDelta = deltaRecovery;
+          bestRecoveryIndex = index;
+        }
+      }
+    });
+
     let html = `
       <div class="scoreboard-shell">
-        <h2 class="score-title">Visitors' Heart-rate</h2>
+        <h2 class="score-title">Visitors' Heart-Rate</h2>
         <p class="score-subtitle">Baseline, stress, and recovery heart rates from visitors</p>
         <div class="scoreboard-table-wrapper">
           <table class="scoreboard-table">
@@ -115,10 +145,42 @@
         rowClasses.push("latest-row");
       }
 
+      const isBestStress = index === bestStressIndex;
+      const isBestRecovery = index === bestRecoveryIndex;
+
       html += `
         <tr class="${rowClasses.join(" ")}">
           <td class="score-td score-name">
-            ${v.name || "Visitor"}
+            <div class="name-cell">
+              ${
+                isBestStress
+                  ? `
+                    <span class="row-badge badge-stress">
+                      <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M13 2 L3 14 H11 L9 22 L21 10 H13 Z"
+                              stroke="none" fill="currentColor" />
+                      </svg>
+                    </span>
+                  `
+                  : ""
+              }
+              ${
+                isBestRecovery
+                  ? `
+                    <span class="row-badge badge-recovery">
+                      <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2 C7 7 5 11 5 15
+                                 c0 4 3 7 7 7
+                                 s7-3 7-7
+                                 c0-3-2-7-7-13 Z"
+                              stroke="none" fill="currentColor" />
+                      </svg>
+                    </span>
+                  `
+                  : ""
+              }
+              <span class="name-label">${v.name || "Visitor"}</span>
+            </div>
           </td>
           <td class="score-td score-station">
             <span class="station-pill">${stationLabel}</span>
@@ -140,6 +202,7 @@
             </tbody>
           </table>
         </div>
+
         <div class="score-legend">
           <span class="score-legend-label">Recovery legend:</span>
           <span class="score-legend-pill legend-good">Good recovery</span>
@@ -165,5 +228,4 @@
     setupScoreboardView,
   };
 })(window);
-
 
