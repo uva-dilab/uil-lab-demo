@@ -112,16 +112,16 @@
     let html = `
       <div class="scoreboard-shell">
         <h2 class="score-title">Visitors' Heart-Rate</h2>
-        <p class="score-subtitle">Baseline, stress, and recovery heart rates from visitors</p>
+        <p class="score-subtitle">Resting, excitement, and relaxation heart rates from visitors in beats per minute (bpm)<ni/p>
         <div class="scoreboard-table-wrapper">
           <table class="scoreboard-table">
             <thead>
               <tr>
                 <th class="score-th score-th-name">Visitor</th>
                 <th class="score-th score-th-station">Station</th>
-                <th class="score-th score-th-number">Baseline (Rest)</th>
-                <th class="score-th score-th-number">Stress</th>
-                <th class="score-th score-th-number">Recovery (Relax)</th>
+                <th class="score-th score-th-number">Resting</th>
+                <th class="score-th score-th-number">Excitement</th>
+                <th class="score-th score-th-number">Relaxation</th>
               </tr>
             </thead>
             <tbody>
@@ -206,8 +206,8 @@
         <div class="score-legend">
           <span class="score-legend-label">Recovery legend:</span>
           <span class="score-legend-pill legend-good">Good recovery</span>
-          <span class="score-legend-pill legend-flat">Back to baseline</span>
-          <span class="score-legend-pill legend-elevated">Still elevated</span>
+          <span class="score-legend-pill legend-flat">Back to resting</span>
+          <span class="score-legend-pill legend-elevated">Still excited</span>
         </div>
       </div>
     `;

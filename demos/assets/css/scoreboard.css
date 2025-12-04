@@ -4,66 +4,70 @@
 
 /* Main view container */
 #scoreboardView {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100vh;
-  padding:32px 40px;
-  box-sizing:border-box;
-  color:#e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 32px 40px;
+  box-sizing: border-box;
+  color: #e5e7eb;
 }
 
 .scoreboard-shell {
-  width:100%;
-  max-width:1100px;
-  text-align:center;
-  transform:translateY(-5vh); /* Optical lift */
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  margin: 0 auto;
 }
 
 /* ---------------------------------------------------------
    TITLE & SUBTITLE
 --------------------------------------------------------- */
 .score-title {
-  font-size:2.2rem;
-  font-weight:700;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  margin:0 0 6px 0;
-  color:#ffffff;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 6px 0;
+  color: #ffffff;
 }
 
 .score-subtitle {
-  font-size:0.95rem;
-  opacity:0.8;
-  color:#cbd5e1;
-  margin:0 0 18px 0;
+  font-size: 1.1rem;
+  opacity: 0.8;
+  color: #cbd5e1;
+  margin: 0 0 18px 0;
 }
 
 /* ---------------------------------------------------------
    TABLE WRAPPER (card)
 --------------------------------------------------------- */
 .scoreboard-table-wrapper {
-  background:rgba(15,23,42,0.96);
-  border-radius:20px;
-  padding:18px 20px 20px;
-  border:1px solid rgba(148,163,184,0.35);
-  box-shadow:0 18px 40px rgba(15,23,42,0.85);
-  position:relative;
-  overflow:hidden;
+  background: rgba(15, 23, 42, 0.96);
+  border-radius: 20px;
+  padding: 22px 24px 26px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Soft fading bottom for 10+ data implication */
 .scoreboard-table-wrapper::after {
-  content:"";
-  position:absolute;
-  bottom:0; left:0; right:0;
-  height:60px;
-  pointer-events:none;
-  background:linear-gradient(
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  pointer-events: none;
+  background: linear-gradient(
     to bottom,
-    rgba(15,23,42,0) 0%,
-    rgba(15,23,42,0.8) 60%,
-    rgba(15,23,42,1) 100%
+    rgba(15, 23, 42, 0) 0%,
+    rgba(15, 23, 42, 0.8) 60%,
+    rgba(15, 23, 42, 1) 100%
   );
 }
 
@@ -71,42 +75,55 @@
    TABLE STRUCTURE
 --------------------------------------------------------- */
 .scoreboard-table {
-  width:100%;
-  border-collapse:collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.score-th, .score-td {
-  padding:14px 18px;
-  white-space:nowrap;
+.score-th,
+.score-td {
+  padding: 16px 22px;
+  white-space: nowrap;
+  font-size: 1.3rem;
 }
 
 /* Headers */
 .score-th {
-  text-align:right;
-  font-weight:600;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-  font-size:0.9rem;
-  color:#9ca3af;
-  border-bottom:1px solid rgba(55,65,81,0.9);
+  text-align: right;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  border-bottom: 1px solid rgba(55, 65, 81, 0.9);
 }
 
-.score-th-name { text-align:left; }
-.score-th-station { text-align:left; }
+.score-th-name {
+  text-align: left;
+}
+.score-th-station {
+  text-align: left;
+}
 
 /* Body rows */
 .score-td {
-  border-bottom:1px solid rgba(31,41,55,0.9);
-  color:#e5e7eb;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+  color: #e5e7eb;
 }
 
 /* Alternate stripes + latest-row highlight */
-.scoreboard-row       { background:rgba(15,23,42,0.75); }
-.scoreboard-row-alt   { background:rgba(15,23,42,0.90); }
+.scoreboard-row {
+  background: rgba(15, 23, 42, 0.75);
+}
+.scoreboard-row-alt {
+  background: rgba(15, 23, 42, 0.9);
+}
 
 .latest-row {
-  background:radial-gradient(circle at 0% 50%, rgba(34,197,94,0.18), rgba(15,23,42,0.95));
-  box-shadow:inset 4px 0 0 rgba(34,197,94,0.9);
+  background: radial-gradient(
+    circle at 0% 50%,
+    rgba(34, 197, 94, 0.18),
+    rgba(15, 23, 42, 0.95)
+  );
+  box-shadow: inset 4px 0 0 rgba(34, 197, 94, 0.9);
 }
 
 /* ---------------------------------------------------------
@@ -116,7 +133,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding-left: 28px;        /* space reserved for icons */
+  padding-left: 28px; /* space reserved for icons */
 }
 
 .name-label {
@@ -127,7 +144,7 @@
 /* Badges overlay inside the cell instead of shifting text */
 .row-badge {
   position: absolute;
-  left: 4px;                 /* icon margin from left */
+  left: 4px;
   top: 50%;
   transform: translateY(-50%);
   width: 20px;
@@ -139,103 +156,136 @@
 }
 
 /* ---------------------------------------------------------
-   NUMBERS — now monospaced for perfect column alignment 🔥
+   NUMBERS
 --------------------------------------------------------- */
 .score-number {
-  text-align:right;
-  font-family:Menlo, Consolas, "Roboto Mono", monospace;
-  font-size:1.1rem;
+  text-align: right;
+  font-family: Menlo, Consolas, "Roboto Mono", monospace;
+  font-size: 1.3rem;
 }
 
 /* ---------------------------------------------------------
    STATION PILL
 --------------------------------------------------------- */
 .station-pill {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:3px 12px;
-  border-radius:999px;
-  background:rgba(148,163,184,0.16);
-  border:1px solid rgba(148,163,184,0.45);
-  font-size:0.85rem;
-  color:#e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  font-size: 0.95rem;
+  color: #e2e8f0;
 }
 
 /* ---------------------------------------------------------
    RECOVERY COLOUR STATES
 --------------------------------------------------------- */
-.score-relax.relax-good     { color:#4ade80; }
-.score-relax.relax-flat     { color:#e5e7eb; }
-.score-relax.relax-elevated { color:#facc15; }
+.score-relax.relax-good {
+  color: #4ade80;
+}
+.score-relax.relax-flat {
+  color: #e5e7eb;
+}
+.score-relax.relax-elevated {
+  color: #facc15;
+}
 
 /* ---------------------------------------------------------
    BADGES (ICONS ONLY)
    ⚡ = strongest stress response
    🌿 = deepest recovery
 --------------------------------------------------------- */
-.row-badge {
-  width:20px;
-  height:20px;
-  border-radius:6px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
 
-/* ⚡ Stress Badge */
+/* Stress Badge */
 .badge-stress {
-  background:rgba(255,88,88,0.18);
-  border:1px solid rgba(255,88,88,0.75);
-  color:#ff6b6b;
+  background: rgba(255, 88, 88, 0.18);
+  border: 1px solid rgba(255, 88, 88, 0.75);
+  color: #ff6b6b;
 }
 
-/* 🌿 Recovery Badge */
+/* Recovery Badge */
 .badge-recovery {
-  background:rgba(45,212,191,0.18);
-  border:1px solid rgba(34,197,94,0.85);
-  color:#4ade80;
+  background: rgba(45, 212, 191, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.85);
+  color: #4ade80;
 }
 
 /* SVG sizing */
 .badge-icon-svg {
-  width:12px;
-  height:12px;
-  display:block;
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 
 /* ---------------------------------------------------------
-   LEGEND UNDER TABLE
+   LEGEND UNDER TABLE — larger & clearer
 --------------------------------------------------------- */
 .score-legend {
-  margin-top:10px;
-  font-size:0.85rem;
-  color:#9ca3af;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:8px;
+  margin-top: 24px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
 }
 
-.score-legend-label { opacity:0.85; margin-right:4px; }
+.score-legend-label {
+  color: #cbd5e1;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
 
+/* Bigger pill-style legend items */
 .score-legend-pill {
-  padding:2px 10px;
-  border-radius:999px;
-  border:1px solid rgba(148,163,184,0.5);
-  background:rgba(15,23,42,0.9);
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Legend colours align with table colours */
-.legend-good     { border-color:#4ade80; color:#4ade80; }
-.legend-flat     { color:#e5e7eb; }
-.legend-elevated { border-color:#facc15; color:#facc15; }
+.legend-good {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(34, 197, 94, 0.8);
+  color: #bbf7d0;
+}
+.legend-flat {
+  background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.8);
+  color: #e2e8f0;
+}
+.legend-elevated {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: rgba(234, 179, 8, 0.85);
+  color: #fde68a;
+}
+
+/* Slight size bump on very large screens */
+@media (min-width: 1400px) {
+  .score-legend-pill {
+    padding: 10px 22px;
+    font-size: 1.15rem;
+  }
+}
 
 /* ---------------------------------------------------------
    RESPONSIVE SCALE
 --------------------------------------------------------- */
-@media (max-width:900px) {
-  .score-th, .score-td { font-size:1rem; padding:10px 12px; }
-  .score-title { font-size:1.8rem; }
+@media (max-width: 900px) {
+  .score-th,
+  .score-td {
+    font-size: 1rem;
+    padding: 10px 12px;
+  }
+  .score-title {
+    font-size: 1.8rem;
+  }
 }
 
