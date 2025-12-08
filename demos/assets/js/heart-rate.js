@@ -4,7 +4,8 @@
 (function (global) {
   const UILStorage = global.UILStorage;
   const UILChartView = global.UILChartView;
-  const UILScoreboardView = global.UILScoreboardView;
+  const UILVisitorsHistoryView = global.UILVisitorsHistoryView;
+
 
   if (!UILStorage) {
     console.error("[heart-rate.js] UILStorage is not available. Check storage.js.");
@@ -29,20 +30,21 @@
   function showView(viewName) {
     const entry = document.getElementById("entryView");
     const graph = document.getElementById("graphView");
-    const scoreboard = document.getElementById("scoreboardView");
+    const envelope = document.getElementById("envelopeView");
 
-    if (!entry || !graph || !scoreboard) return;
+
+    if (!entry || !graph || !envelope) return;
 
     entry.style.display = "none";
     graph.style.display = "none";
-    scoreboard.style.display = "none";
+    envelope.style.display = "none";
 
     if (viewName === "entry") {
       entry.style.display = "block";
     } else if (viewName === "graph") {
       graph.style.display = "block";
-    } else if (viewName === "scoreboard") {
-      scoreboard.style.display = "block";
+    } else if (viewName === "envelope") { 
+      envelope.style.display = "block";
     }
   }
 
@@ -241,12 +243,12 @@
         return;
       }
       UILChartView.setupGraphView();
-    } else if (view === "scoreboard") {
-      if (!UILScoreboardView) {
-        console.error("[heart-rate.js] UILScoreboardView is not available. Check scoreboard-view.js.");
+    } else if (view === "envelope") {
+      if (!UILVisitorsHistoryView) {
+        console.error("[heart-rate.js] UILVisitorsHistoryView is not available.");
         return;
       }
-      UILScoreboardView.setupScoreboardView();
+      UILVisitorsHistoryView.setupVisitorsHistoryView();
     }
   });
 })(window);
