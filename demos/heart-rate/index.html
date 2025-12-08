@@ -86,13 +86,39 @@
 
 
 
-  <!-- SCOREBOARD VIEW (large screen) -->
   <!-- VISITORS HISTORY VIEW (collective envelope plot) -->
   <div id="envelopeView" style="display:none;">
-      <div class="visitors-history-shell">
-          <canvas id="visitorsHistoryChart"></canvas>
-      </div>
-  </div>
+    <div class="visitors-history-shell">
+
+        <!-- INFORMATION OVERLAY -->
+        <div class="history-info">
+        <h1 class="history-title">An Overview of All Visitors' Heartbeats Experience</h1>
+        <p class="history-subtitle">
+            A collective trace of how our heartbeats react to sound
+        </p>
+        <div class="history-legend">
+            <span class="legend-item">
+            <span class="legend-line legend-live"></span>
+            Current visitor
+            </span>
+            <span class="legend-item">
+            <span class="legend-band"></span>
+            Collective range of past visitors
+            </span>
+        </div>
+        </div>
+
+        <!-- CANVAS -->
+        <canvas id="visitorsHistoryChart"></canvas>
+
+        <!-- MICRO CAPTION -->
+        <div class="history-caption">
+            New data appears every time someone completes the experience.
+        </div>
+
+    </div>
+</div>
+
 
   <!--<div id="scoreboardView" style="display:none;">-->
     <!--<div id="scoreboardContainer">Loading…</div>-->

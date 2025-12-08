@@ -42,9 +42,9 @@
 
   function createEnvelopeGradient(ctx, height) {
     const grad = ctx.createLinearGradient(0, 0, 0, height);
-    grad.addColorStop(0, "rgba(56, 189, 248, 0.18)");
-    grad.addColorStop(0.5, "rgba(34, 197, 94, 0.22)");
-    grad.addColorStop(1, "rgba(15, 23, 42, 0.05)");
+    grad.addColorStop(0, "rgba(56, 189, 248, 0.10)");
+    grad.addColorStop(0.5, "rgba(34, 197, 94, 0.14)");
+    grad.addColorStop(1, "rgba(15, 23, 42, 0.02)");
     return grad;
   }
 
@@ -118,7 +118,7 @@
       tension: 0.5,
       borderWidth: 1,
       pointRadius: 0,
-      borderColor: "rgba(148,163,184,0.12)",
+      borderColor: "rgba(148,163,184,0.20)",
       fill: false
     }));
 
@@ -128,14 +128,15 @@
       label: "Latest Visitor",
       data: latestData,
       tension: 0.45,
-      borderWidth: 3.5,
-      pointRadius: 7,
-      borderColor: "rgba(34,197,94,0.95)",
-      pointBackgroundColor: "#22c55e",
-      pointBorderColor: "#052e16",
-      pointBorderWidth: 2,
+      borderWidth: 3.2,
+      pointRadius: 6,
+      borderColor: "rgba(34,197,94,0.90)",
+      pointBackgroundColor: "rgba(74,222,128,0.95)",
+      pointBorderColor: "rgba(3,46,22,0.7)",
+      pointBorderWidth: 1.5,
       fill: false
     };
+
 
     const allDatasets = [
       lowerEnvelope,
