@@ -8,12 +8,12 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Our CSS -->
   <link rel="stylesheet" href="../assets/css/heart-rate.css" />
-  <link rel="stylesheet" href="../assets/css/scoreboard.css">
+  <link rel="stylesheet" href="../assets/css/visitors-history.css">
 
   <!-- Our JS modules (order matters!) -->
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/chart-view.js"></script>
-  <script src="../assets/js/scoreboard-view.js"></script>
+  <script src="../assets/js/visitors-history.js"></script>
   <script src="../assets/js/heart-rate.js"></script>
 </head>
 <body>
@@ -87,9 +87,16 @@
 
 
   <!-- SCOREBOARD VIEW (large screen) -->
-  <div id="scoreboardView" style="display:none;">
-    <div id="scoreboardContainer">Loading…</div>
+  <!-- VISITORS HISTORY VIEW (collective envelope plot) -->
+  <div id="envelopeView" style="display:none;">
+      <div class="visitors-history-shell">
+          <canvas id="visitorsHistoryChart"></canvas>
+      </div>
   </div>
+
+  <!--<div id="scoreboardView" style="display:none;">-->
+    <!--<div id="scoreboardContainer">Loading…</div>-->
+  <!--</div>-->
 </body>
 </html>
 
