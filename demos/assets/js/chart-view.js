@@ -146,7 +146,7 @@
               bodyColor: "#e5e7eb",
               bodyFont: { size: 18 },
               titleFont: { size: 20 },
-              padding: 10,
+              padding: 20,
               displayColors: false,
               callbacks: {
                 label: (ctx) => `${ctx.label}: ${ctx.formattedValue} BPM`,
@@ -154,7 +154,7 @@
             },
           },
 
-          // 📌 Dynamic Y-axis spacing incorporated here
+          //  Dynamic Y-axis spacing incorporated here
           scales: {
             y: {
               title: {
