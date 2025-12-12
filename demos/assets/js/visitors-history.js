@@ -1,5 +1,6 @@
 // visitors-history.js
 // Collective "heartbeat envelope" visualization with faint trails + latest visitor highlight
+// Stable version with decoupled smooth breathing animation
 
 (function (global) {
   const UILStorage = global.UILStorage;
@@ -11,6 +12,11 @@
   let historyChart = null;
   let pollInterval = null;
   let lastSignature = null;
+
+  // Breathing animation state
+  let breathPhase = 0;
+  let baseLow = null;
+  let baseHigh = null;
 
   function computeEnvelope(visitors) {
     const rest = [];
@@ -48,6 +54,25 @@
     return grad;
   }
 
+  // ✅ Smooth continuous breathing animation (NO data mutation)
+  function animateBreathing() {
+    if (!historyChart || !baseLow || !baseHigh) {
+      requestAnimationFrame(animateBreathing);
+      return;
+    }
+
+    const breathAmount = Math.sin(breathPhase) * 1.2;
+
+    // Apply breathing offset to envelope only
+    historyChart.data.datasets[0].data = baseLow.map(v => v + breathAmount);
+    historyChart.data.datasets[1].data = baseHigh.map(v => v + breathAmount);
+
+    historyChart.update("none"); // ✅ no animation, smooth visual drift only
+
+    breathPhase += 0.015; // slow, calm breathing cycle
+    requestAnimationFrame(animateBreathing);
+  }
+
   async function renderVisitorsHistory() {
     const canvas = document.getElementById("visitorsHistoryChart");
     if (!canvas) return;
@@ -65,12 +90,18 @@
     const signature = JSON.stringify(
       visitors.map(v => [v.id, v.resting, v.stress, v.relax])
     );
-    if (signature === lastSignature) return;
 
+    const isNewData = signature !== lastSignature;
     lastSignature = signature;
 
     const envelope = computeEnvelope(visitors);
     if (!envelope) return;
+
+    // ✅ Store BASE envelope only when data changes
+    if (isNewData || !baseLow || !baseHigh) {
+      baseLow = envelope.low;
+      baseHigh = envelope.high;
+    }
 
     const labels = ["Rest", "Stress", "Relax"];
 
@@ -84,11 +115,11 @@
     const ctx = canvas.getContext("2d");
     const envelopeGradient = createEnvelopeGradient(ctx, canvas.height);
 
-    // ----- ENVELOPE DATASETS -----
+    // ----- ENVELOPE DATASETS (BASE — NO BREATHING HERE) -----
 
     const lowerEnvelope = {
       label: "Envelope Lower",
-      data: envelope.low,
+      data: baseLow,
       tension: 0.55,
       borderWidth: 0,
       pointRadius: 0
@@ -96,13 +127,11 @@
 
     const upperEnvelope = {
       label: "Envelope Upper",
-      data: envelope.high,
+      data: baseHigh,
       tension: 0.55,
       borderWidth: 0,
       pointRadius: 0,
-      fill: {
-        target: "-1"
-      },
+      fill: { target: "-1" },
       backgroundColor: envelopeGradient
     };
 
@@ -128,15 +157,14 @@
       label: "Latest Visitor",
       data: latestData,
       tension: 0.45,
-      borderWidth: 3.2,
-      pointRadius: 6,
+      borderWidth: isNewData ? 4.2 : 3.2,
+      pointRadius: isNewData ? 8 : 6,
       borderColor: "rgba(34,197,94,0.90)",
       pointBackgroundColor: "rgba(74,222,128,0.95)",
       pointBorderColor: "rgba(3,46,22,0.7)",
       pointBorderWidth: 1.5,
       fill: false
     };
-
 
     const allDatasets = [
       lowerEnvelope,
@@ -158,8 +186,8 @@
           responsive: true,
           maintainAspectRatio: false,
           animation: {
-            duration: 900,
-            easing: "easeOutQuart"
+            duration: 1200,
+            easing: "easeInOutSine"
           },
           plugins: {
             legend: { display: false },
@@ -183,7 +211,8 @@
           }
         }
       });
-    } else {
+    } else if (isNewData) {
+      // ✅ Only rebuild datasets when data truly changes
       historyChart.data.labels = labels;
       historyChart.data.datasets = allDatasets;
       historyChart.update();
@@ -193,8 +222,11 @@
   function setupVisitorsHistoryView() {
     console.log("[visitors-history] Setup");
     renderVisitorsHistory();
+
     if (pollInterval) clearInterval(pollInterval);
     pollInterval = setInterval(renderVisitorsHistory, 2500);
+
+    requestAnimationFrame(animateBreathing); // ✅ start smooth breathing loop
   }
 
   // Public API
