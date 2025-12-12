@@ -81,21 +81,6 @@
   touch-action: manipulation;
 }
 
-/* Ultra-wide / wall display support */
-/*@media (min-width: 1400px) {*/
-  /*.visitors-history-shell {*/
-    /*max-width: 1400px;*/
-    /*height: 500px;*/
-  /*}*/
-/*}*/
-
-/*[> Small screens fallback <]*/
-/*@media (max-width: 900px) {*/
-  /*.visitors-history-shell {*/
-    /*height: 300px;*/
-  /*}*/
-/*}*/
-
 @media (min-width: 1400px) {
   .visitors-history-shell {
     max-width: 1800px;
@@ -116,40 +101,43 @@
 
 .history-info {
   position: absolute;
-  top: 22px;
-  left: 28px;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
-  text-align: left;
+  text-align: center;
   pointer-events: none;
+  max-width: 80%
 }
 
 .history-title {
-  margin: 0 0 4px 0;
-  font-size: 1.4rem;
+  margin: 0 0 6px 0;
+  font-size: 2.1rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffffff;
 }
 
 .history-subtitle {
-  margin: 0 0 10px 0;
-  font-size: 0.9rem;
+  margin: 0 0 14px 0;
+  font-size: 1.3rem;
   color: #cbd5e1;
   opacity: 0.85;
 }
 
 .history-legend {
   display: flex;
-  gap: 14px;
-  font-size: 0.8rem;
+  justify-content: center;
+  gap: 26px;
+  font-size: 1.1rem;
   color: #cbd5e1;
 }
 
 .legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   white-space: nowrap;
 }
 
@@ -188,13 +176,14 @@
 
 .history-caption {
   position: absolute;
-  bottom: 18px;
-  right: 24px;
-  font-size: 0.75rem;
+  bottom: 22px;
+  left: 50%;
+  transform: translate(-50%);
+  max-width: 80%;
+  font-size: 1.5rem;
   color: #9ca3af;
-  letter-spacing: 0.02em;
-  opacity: 0.75;
+  letter-spacing: 0.05em;
+  opacity: 0.79;
   pointer-events: none;
-  text-align: right;
-}
+  text-align: center;
 
