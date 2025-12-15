@@ -77,6 +77,42 @@ def upsert_visitor():
 
     return jsonify({"status": "ok"})
 
+# ----------------------------
+# New experience endpoints
+# ----------------------------
+
+@app.post("/api/experience/stress/start")
+def api_experience_stress_start():
+    try:
+        status = experience.start_stress()
+        return jsonify({"ok": True, "status": status})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+@app.post("/api/experience/calm/start")
+def api_experience_calm_start():
+    try:
+        status = experience.start_calm()
+        return jsonify({"ok": True, "status": status})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+@app.post("/api/experience/stop")
+def api_experience_stop():
+    try:
+        status = experience.stop()
+        return jsonify({"ok": True, "status": status})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+@app.get("/api/experience/status")
+def api_experience_status():
+    try:
+        return jsonify({"ok": True, "status": experience.status()})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
 if __name__ == "__main__":
     # Run on 0.0.0.0 so other laptops in the lab can reach it
     app.run(host="0.0.0.0", port=5000, debug=True)
