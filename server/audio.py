@@ -30,4 +30,18 @@ class AudioController:
         self._wave_stress = sa.WaveObject.from_wave_file(self.cfg.stress_wav_path)
         self._wave_calm = sa.WaveObject.from_wave_file(self.cfg.calm_wav_path)
 
+    def status(self) -> dict:
+        with self._lock:
+            is_playing = bool(self._play_obj and self._play_obj.is_playing())
+            return {"mode": self._current_mode, "is_playing": is_playing}
+
+    def stop(self) -> None:
+        with self._lock:
+            if self._play_obj is not None:
+                try:
+                    self._play_obj.stop()
+                except Exception:
+                    pass
+            self._play_obj = None
+            self._current_mode = None
 
