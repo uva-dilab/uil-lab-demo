@@ -60,3 +60,4 @@ class HueController:
             # bridge.set_light(lid, "on", True)
             # bridge.set_light(lid, "bri", self.cfg.off_bri)
 
+
