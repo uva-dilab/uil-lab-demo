@@ -45,3 +45,18 @@ class AudioController:
             self._play_obj = None
             self._current_mode = None
 
+    def start(self, mode: str) -> None:
+        if mode not in ("stress", "calm"):
+            raise ValueError("mode must be 'stress' or 'calm'")
+
+        with self._lock:
+            # always stop any existing playback first
+            if self._play_obj is not None:
+                try:
+                    self._play_obj.stop()
+                except Exception:
+                    pass
+
+            wave = self._wave_stress if mode == "stress" else self._wave_calm
+            self._play_obj = wave.play()
+            self._current_mode = mode
