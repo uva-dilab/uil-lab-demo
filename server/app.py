@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import threading
+import os
+
+from server.hue import HueController
+from server.audio import AudioController
+from server.experience import LightSoundExperience
 
 app = Flask(__name__)
 CORS(app)  # allow requests from your demo laptops
@@ -9,6 +14,43 @@ CORS(app)  # allow requests from your demo laptops
 VISITORS = []
 LOCK = threading.Lock()
 
+
+# ----------------------------
+# Experience (Hue + Audio) config
+# ----------------------------
+
+BRIDGE_IP = "192.168.0.172"
+
+# Update to your two bulb IDs:
+LIGHTS = [7]  # e.g. [7, 8]
+
+LIGHT_COLOR_CALM = {"hue": 40000, "sat": 254, "bri": 150}
+LIGHT_COLOR_STRESS = {"hue": 1000, "sat": 254, "bri": 254}
+
+# Resolve WAV file paths relative to repo root:
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DEMO_DIR = os.path.join(REPO_ROOT, "demos", "heart-rate")
+
+AUDIO_FILE_STRESS = os.path.join(DEMO_DIR, "Stress.wav")
+AUDIO_FILE_CALM = os.path.join(DEMO_DIR, "Nature.wav")
+
+# Initialise controllers (single shared channel)
+hue_ctrl = HueController(
+    bridge_ip=BRIDGE_IP,
+    lights=LIGHTS,
+    calm=LIGHT_COLOR_CALM,
+    stress=LIGHT_COLOR_STRESS,
+)
+audio_ctrl = AudioController(
+    stress_wav_path=AUDIO_FILE_STRESS,
+    calm_wav_path=AUDIO_FILE_CALM,
+)
+experience = LightSoundExperience(hue_ctrl, audio_ctrl)
+
+
+# ----------------------------
+# Visitors Database
+# ----------------------------
 @app.get("/api/visitors")
 def get_visitors():
     """Return all visitors."""
