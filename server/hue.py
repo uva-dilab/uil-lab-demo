@@ -13,6 +13,7 @@ class HueConfig:
     calm: Dict[str, int]
     stress: Dict[str, int]
     off_bri: int = 1  # dim fallback if you don't want full off
+    dry_run: bool = False  # dry run
 
 
 class HueController:
@@ -21,6 +22,9 @@ class HueController:
         self._bridge: Optional[Bridge] = None
 
     def connect(self) -> Bridge:
+        if self.cfg.dry_run:
+            # Never connect in dry run mode
+            raise RuntimeError("HueController.connect() called while dry_run=True")
         if self._bridge is None:
             b = Bridge(self.cfg.bridge_ip)
             b.connect()  # requires bridge button press first time
@@ -40,16 +44,27 @@ class HueController:
             bridge.set_light(light_id, "sat", int(color["sat"]))
 
     def set_calm(self) -> None:
+        if self.cfg.dry_run:
+            print(f"[HUE DRY RUN] CALM -> lights={self.cfg.lights}, settings={self.cfg.calm}")
+            return
+
         bridge = self.connect()
         for lid in self.cfg.lights:
             self._set_light_color_safe(bridge, lid, self.cfg.calm)
 
     def set_stress(self) -> None:
+        if self.cfg.dry_run:
+            print(f"[HUE DRY RUN] STRESS -> lights={self.cfg.lights}, settings={self.cfg.stress}")
+            return
+
         bridge = self.connect()
         for lid in self.cfg.lights:
             self._set_light_color_safe(bridge, lid, self.cfg.stress)
 
     def turn_off(self) -> None:
+        if self.cfg.dry_run:
+            print(f"[HUE DRY RUN] OFF -> lights={self.cfg.lights}")
+            return
         bridge = self.connect()
         for lid in self.cfg.lights:
             # Decide your preference:
