@@ -1,135 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-  <!--<meta charset="UTF-8" />-->
-  <!--<title>UIL Heart Rate Demo – Minimal</title>-->
-  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
-  <!--[> Chart.js: external library, global Chart object <]-->
-  <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
-  <!--[> Our CSS <]-->
-  <!--<link rel="stylesheet" href="../assets/css/heart-rate.css" />-->
-  <!--<link rel="stylesheet" href="../assets/css/visitors-history.css">-->
-
-  <!--[> Our JS modules (order matters!) <]-->
-  <!--<script src="../assets/js/storage.js"></script>-->
-  <!--<script src="../assets/js/chart-view.js"></script>-->
-  <!--<script src="../assets/js/visitors-history.js"></script>-->
-  <!--<script src="../assets/js/heart-rate.js"></script>-->
-<!--</head>-->
-<!--<body>-->
-  <!--[> ENTRY VIEW (for facilitator) <]-->
-  <!--<div id="entryView" style="display:none;">-->
-    <!--<h1>Data Entry</h1>-->
-
-    <!--<label>-->
-      <!--Visitor ID :-->
-      <!--<input id="nameInput" type="text" placeholder="e.g. Anna, S3" />-->
-    <!--</label>-->
-    <!--<br /><br />-->
-
-    <!--<button id="startVisitorBtn">Start new visitor</button>-->
-    <!--<p id="currentVisitorLabel"><em>No active visitor.</em></p>-->
-
-    <!--<hr />-->
-
-    <!--<p><strong>Step 1 – Resting heart rate</strong></p>-->
-    <!--<label>-->
-      <!--<input id="restInput" type="number" placeholder="e.g. 72" />-->
-    <!--</label>-->
-    <!--<button id="saveRestBtn">Save</button>-->
-
-    <!--<br /><br />-->
-
-    <!--<p><strong>Step 2 – After stress sound</strong></p>-->
-    <!--<label>-->
-      <!--<input id="stressInput" type="number" placeholder="e.g. 88" />-->
-    <!--</label>-->
-    <!--<button id="saveStressBtn">Save</button>-->
-
-    <!--<br /><br />-->
-
-    <!--<p><strong>Step 3 – After relax sound</strong></p>-->
-    <!--<label>-->
-      <!--<input id="relaxInput" type="number" placeholder="e.g. 76" />-->
-    <!--</label>-->
-    <!--<button id="saveRelaxBtn">Save</button>-->
-
-    <!--<br /><br />-->
-    <!--<button id="finishVisitorBtn">Finish</button>-->
-
-    <!--<p id="entryStatus"></p>-->
-  <!--</div>-->
-
-    <!--[> GRAPH VIEW (clean minimal screen) <]-->
-    <!--<div id="graphView" style="display:none;">-->
-        <!--<div class="graph-layout">-->
-            <!--<div class="graph-card">-->
-                <!--<div class="graph-info">-->
-                    <!--<h1 class="graph-title">HEART RATE STORY</h1>-->
-                <!--</div>-->
-
-            <!--<div class="graph-header-row">-->
-                <!--<div></div>-->
-                <!--<div class="graph-badge">-->
-                    <!--<svg class="heart-icon" viewBox="0 0 24 24">-->
-                        <!--<path d="M12 21s-6-4.35-9-8c-3-3.5 0-9 4.5-9C9.5 4 12 7 12 7s2.5-3 4.5-3C21 4 24 9.5 21 13c-3 3.65-9 8-9 8z"-->
-                              <!--fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
-                    <!--</svg>-->
-                    <!--Live-->
-                <!--</div>-->
-            <!--</div>-->
-
-            <!--<div class="graph-canvas-wrapper">-->
-                <!--<canvas id="hrChart"></canvas>-->
-            <!--</div>-->
-            <!--<div id="graphStatus" class="graph-status-visitor" aria-live="polite"></div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-
-
-
-  <!--[> VISITORS HISTORY VIEW (collective envelope plot) <]-->
-  <!--<div id="envelopeView" style="display:none;">-->
-    <!--<div class="visitors-history-shell">-->
-
-        <!--[> INFORMATION OVERLAY <]-->
-        <!--<div class="history-info">-->
-        <!--<h1 class="history-title">An Overview of All Visitors' Heartbeats Experience</h1>-->
-        <!--<p class="history-subtitle">-->
-            <!--A collective trace of how our heartbeats react to sound-->
-        <!--</p>-->
-        <!--<div class="history-legend">-->
-            <!--<span class="legend-item">-->
-            <!--<span class="legend-line legend-live"></span>-->
-            <!--Current visitor-->
-            <!--</span>-->
-            <!--<span class="legend-item">-->
-            <!--<span class="legend-band"></span>-->
-            <!--Collective range of past visitors-->
-            <!--</span>-->
-        <!--</div>-->
-        <!--</div>-->
-
-        <!--[> CANVAS <]-->
-        <!--<canvas id="visitorsHistoryChart"></canvas>-->
-
-        <!--[> MICRO CAPTION <]-->
-        <!--<div class="history-caption">-->
-            <!--New data appears every time someone completes the experience.-->
-        <!--</div>-->
-
-    <!--</div>-->
-<!--</div>-->
-
-
-  <!--[><div id="scoreboardView" style="display:none;"><]-->
-    <!--[><div id="scoreboardContainer">Loading…</div><]-->
-  <!--[></div><]-->
-<!--</body>-->
-<!--</html>-->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -148,6 +16,7 @@
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/chart-view.js"></script>
   <script src="../assets/js/visitors-history.js"></script>
+  <script src="../assets/js/experience.js"></script>
   <script src="../assets/js/heart-rate.js"></script>
 </head>
 
@@ -155,6 +24,20 @@
   <!-- ENTRY VIEW (facilitator, minimal) -->
   <div id="entryView" style="display:none;">
     <h1>Data Entry</h1>
+
+    <!-- EXPERIENCE CONTROLS (Sound + Hue) -->
+    <div class="experience-controls">
+        <h2>Experience Controls</h2>
+        <button id="startStressBtn" type="button">Start Stress</button>
+        <button id="startCalmBtn" type="button">Start Calm</button>
+        <button id="stopExperienceBtn" type="button">Stop</button>
+
+        <p id="experienceStatus" class="experience-status" aria-live="polite"></p>
+        <p class="experience-hint">Tip: press <strong>Escape</strong> for an immediate stop.</p>
+    </div>
+
+    <hr />
+
 
     <p><strong>Step 1 – Resting heart rate</strong></p>
     <label>

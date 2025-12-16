@@ -8,6 +8,9 @@ from server.hue import HueController, HueConfig
 from server.audio import AudioController
 from server.experience import LightSoundExperience
 
+import atexit
+import signal
+
 app = Flask(__name__)
 CORS(app)  # allow requests from your demo laptops
 
@@ -58,6 +61,17 @@ audio_ctrl = AudioController(
     calm_wav_path=AUDIO_FILE_CALM,
 )
 experience = LightSoundExperience(hue_ctrl, audio_ctrl)
+
+def _cleanup(*_args):
+    try:
+        experience.stop()
+    except Exception:
+        pass
+
+atexit.register(_cleanup)
+
+signal.signal(signal.SIGINT, _cleanup)
+signal.signal(signal.SIGTERM, _cleanup)
 
 
 # ----------------------------
