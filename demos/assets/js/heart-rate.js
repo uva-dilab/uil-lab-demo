@@ -135,7 +135,6 @@
     // Panic stop on Escape (excellent for exhibitions)
     window.addEventListener("keydown", (e) => {
       if (e.key !== "Escape") return;
-      // Do not disrupt typing in inputs; only act when Escape is pressed
       UILExperience.stop()
         .then((data) => render(data.status))
         .catch(() => {});
@@ -157,11 +156,20 @@
       return;
     }
 
-    // NEW: wire experience controls (buttons + status) if present
     setupExperienceControls();
 
     async function ensureVisitor() {
       if (currentVisitor) return;
+
+      // NEW: force baseline (neutral) at the start of each visitor
+      if (UILExperience && typeof UILExperience.baseline === "function") {
+        try {
+          await UILExperience.baseline();
+        } catch (e) {
+          console.warn("[heart-rate.js] baseline call failed:", e);
+        }
+      }
+
       currentVisitor = newVisitorObject(stationId);
       await safeUpsert(currentVisitor); // create record immediately
     }
@@ -193,13 +201,20 @@
       currentVisitor.relax = relax;
       await safeUpsert(currentVisitor);
 
-      // auto-finish + reset for next person
+      // NEW: return lights to neutral at end of visitor
+      if (UILExperience && typeof UILExperience.stop === "function") {
+        try {
+          await UILExperience.stop();
+        } catch (e) {
+          console.warn("[heart-rate.js] stop at finish failed:", e);
+        }
+      }
+
       currentVisitor = null;
       clear(relaxEl);
       focus(restEl);
     }
 
-    // Keyboard-first flow
     restEl.addEventListener("keydown", (e) => {
       if (e.key !== "Enter") return;
       e.preventDefault();
@@ -218,7 +233,6 @@
       saveRelaxAndFinish();
     });
 
-    // Optional: if your Save buttons still exist, wire them too (no harm)
     const saveRestBtn = document.getElementById("saveRestBtn");
     const saveStressBtn = document.getElementById("saveStressBtn");
     const saveRelaxBtn = document.getElementById("saveRelaxBtn");
@@ -227,7 +241,6 @@
     if (saveStressBtn) saveStressBtn.addEventListener("click", saveStress);
     if (saveRelaxBtn) saveRelaxBtn.addEventListener("click", saveRelaxAndFinish);
 
-    // Start on Rest field
     focus(restEl);
   }
 

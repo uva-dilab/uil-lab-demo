@@ -12,9 +12,6 @@ import atexit
 import signal
 
 app = Flask(__name__)
-
-# If UI + API are served from the same Flask origin, CORS is not strictly needed.
-# Keeping it enabled is fine during development and will not break anything.
 CORS(app)
 
 VISITORS = []
@@ -36,16 +33,17 @@ LIGHTS = [7]
 
 LIGHT_COLOR_CALM = {"hue": 40000, "sat": 254, "bri": 150}
 LIGHT_COLOR_STRESS = {"hue": 1000, "sat": 254, "bri": 254}
+LIGHT_COLOR_NEUTRAL = {"hue": 8500, "sat": 40, "bri": 180}  # adjust later on-site
 
 AUDIO_FILE_STRESS = os.path.join(HEART_RATE_DIR, "Stress.wav")
 AUDIO_FILE_CALM = os.path.join(HEART_RATE_DIR, "Nature.wav")
 
-# Dry Run
 HUE_DRY_RUN = os.getenv("HUE_DRY_RUN", "0") == "1"
 
 hue_cfg = HueConfig(
     bridge_ip=BRIDGE_IP,
     lights=LIGHTS,
+    neutral=LIGHT_COLOR_NEUTRAL,
     calm=LIGHT_COLOR_CALM,
     stress=LIGHT_COLOR_STRESS,
     dry_run=HUE_DRY_RUN,
@@ -59,6 +57,12 @@ audio_ctrl = AudioController(
 
 experience = LightSoundExperience(hue_ctrl, audio_ctrl)
 
+# Default installation state: neutral (safe even in dry-run)
+try:
+    hue_ctrl.set_neutral()
+except Exception:
+    pass
+
 # ----------------------------
 # Cleanup (stop sound + lights on exit)
 # ----------------------------
@@ -68,28 +72,29 @@ def _cleanup(*_args):
     except Exception:
         pass
 
+def _cleanup_and_exit(signum, frame):
+    _cleanup()
+    raise KeyboardInterrupt
+
 atexit.register(_cleanup)
-signal.signal(signal.SIGINT, _cleanup)
-signal.signal(signal.SIGTERM, _cleanup)
+signal.signal(signal.SIGINT, _cleanup_and_exit)
+signal.signal(signal.SIGTERM, _cleanup_and_exit)
 
 # ----------------------------
 # UI routes (served by Flask)
 # ----------------------------
 @app.get("/")
 def serve_index():
-    # Main entry point: /?view=entry&station=1, /?view=graph, /?view=envelope
     return send_from_directory(HEART_RATE_DIR, "index.html")
 
 @app.get("/assets/<path:filename>")
 def serve_assets(filename):
     return send_from_directory(ASSETS_DIR, filename)
 
-# Optional convenience route
 @app.get("/heart-rate/")
 def serve_heart_rate_index():
     return send_from_directory(HEART_RATE_DIR, "index.html")
 
-# Optional health check
 @app.get("/api/health")
 def api_health():
     return jsonify({"ok": True})
@@ -99,13 +104,11 @@ def api_health():
 # ----------------------------
 @app.get("/api/visitors")
 def get_visitors():
-    """Return all visitors."""
     with LOCK:
         return jsonify(VISITORS)
 
 @app.post("/api/visitors")
 def upsert_visitor():
-    """Create or update a visitor."""
     data = request.get_json(force=True)
     vid = data.get("id")
     if not vid:
@@ -124,6 +127,19 @@ def upsert_visitor():
 # ----------------------------
 # Experience endpoints
 # ----------------------------
+@app.post("/api/experience/baseline")
+def api_experience_baseline():
+    """
+    Force baseline state:
+    - stop any audio
+    - set lights to neutral
+    """
+    try:
+        status = experience.begin_baseline()
+        return jsonify({"ok": True, "status": status})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
 @app.post("/api/experience/stress/start")
 def api_experience_stress_start():
     try:
@@ -156,5 +172,5 @@ def api_experience_status():
         return jsonify({"ok": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
-    # Run on 0.0.0.0 so other laptops in the lab can reach it
     app.run(host="0.0.0.0", port=5000, debug=True)
+

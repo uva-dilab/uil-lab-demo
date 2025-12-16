@@ -41,15 +41,23 @@
   }
 
   const UILExperience = {
+    // Baseline / Neutral (no audio)
+    baseline: () => postJSON("/api/experience/baseline"),
+
+    // Active conditions
     startStress: () => postJSON("/api/experience/stress/start"),
     startCalm: () => postJSON("/api/experience/calm/start"),
+
+    // End / reset (should return to neutral in your server logic)
     stop: () => postJSON("/api/experience/stop"),
+
     status: () => getJSON("/api/experience/status"),
 
     formatStatus(status) {
       if (!status) return "";
       if (status.is_playing) return `Playing: ${status.mode || "unknown"}`;
-      return "Stopped";
+      // In your intended flow, "not playing" corresponds to neutral baseline lighting.
+      return "Neutral (idle)";
     },
   };
 

@@ -12,6 +12,7 @@ class HueConfig:
     lights: List[int]  # bulb IDs
     calm: Dict[str, int]
     stress: Dict[str, int]
+    neutral: Dict[str, int]
     off_bri: int = 1  # dim fallback if you don't want full off
     dry_run: bool = False  # dry run
 
@@ -43,36 +44,35 @@ class HueController:
             bridge.set_light(light_id, "hue", int(color["hue"]))
             bridge.set_light(light_id, "sat", int(color["sat"]))
 
-    def set_calm(self) -> None:
+    def _apply(self, label: str, settings: Dict[str, int]) -> None:
         if self.cfg.dry_run:
-            print(f"[HUE DRY RUN] CALM -> lights={self.cfg.lights}, settings={self.cfg.calm}")
+            print(f"[HUE DRY RUN] {label} -> lights={self.cfg.lights}, settings={settings}")
             return
 
         bridge = self.connect()
         for lid in self.cfg.lights:
-            self._set_light_color_safe(bridge, lid, self.cfg.calm)
+            self._set_light_color_safe(bridge, lid, settings)
+
+    def set_neutral(self) -> None:
+        self._apply("NEUTRAL", self.cfg.neutral)
+
+    def set_calm(self) -> None:
+        self._apply("CALM", self.cfg.calm)
 
     def set_stress(self) -> None:
-        if self.cfg.dry_run:
-            print(f"[HUE DRY RUN] STRESS -> lights={self.cfg.lights}, settings={self.cfg.stress}")
-            return
-
-        bridge = self.connect()
-        for lid in self.cfg.lights:
-            self._set_light_color_safe(bridge, lid, self.cfg.stress)
+        self._apply("STRESS", self.cfg.stress)
 
     def turn_off(self) -> None:
         if self.cfg.dry_run:
             print(f"[HUE DRY RUN] OFF -> lights={self.cfg.lights}")
             return
+
         bridge = self.connect()
         for lid in self.cfg.lights:
-            # Decide your preference:
             # Option A: true off
             bridge.set_light(lid, "on", False)
 
-            # Option B: keep on but very dim (comment out Option A above if you use this)
+            # Option B: keep on but very dim (use instead of Option A)
             # bridge.set_light(lid, "on", True)
             # bridge.set_light(lid, "bri", self.cfg.off_bri)
-
 
