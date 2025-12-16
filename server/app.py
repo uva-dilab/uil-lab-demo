@@ -4,7 +4,7 @@ from datetime import datetime
 import threading
 import os
 
-from server.hue import HueController
+from server.hue import HueController, HueConfig
 from server.audio import AudioController
 from server.experience import LightSoundExperience
 
@@ -34,13 +34,25 @@ DEMO_DIR = os.path.join(REPO_ROOT, "demos", "heart-rate")
 AUDIO_FILE_STRESS = os.path.join(DEMO_DIR, "Stress.wav")
 AUDIO_FILE_CALM = os.path.join(DEMO_DIR, "Nature.wav")
 
-# Initialise controllers (single shared channel)
-hue_ctrl = HueController(
+# Dry Run
+HUE_DRY_RUN = os.getenv("HUE_DRY_RUN", "0") == "1"
+
+hue_cfg = HueConfig(
     bridge_ip=BRIDGE_IP,
     lights=LIGHTS,
     calm=LIGHT_COLOR_CALM,
     stress=LIGHT_COLOR_STRESS,
+    dry_run=HUE_DRY_RUN,   # requires you to add dry_run to HueConfig as discussed
 )
+hue_ctrl = HueController(hue_cfg)
+
+# Initialise controllers (single shared channel)
+# hue_ctrl = HueController(
+    # bridge_ip=BRIDGE_IP,
+    # lights=LIGHTS,
+    # calm=LIGHT_COLOR_CALM,
+    # stress=LIGHT_COLOR_STRESS,
+# )
 audio_ctrl = AudioController(
     stress_wav_path=AUDIO_FILE_STRESS,
     calm_wav_path=AUDIO_FILE_CALM,
