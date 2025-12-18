@@ -142,6 +142,9 @@
 
     // Initial status read
     refresh();
+    // Keep countdown fresh (status includes remaining_sec)
+    setInterval(refresh, 1000);
+
   }
 
   function setupEntryView() {
@@ -150,6 +153,10 @@
     const restEl = document.getElementById("restInput");
     const stressEl = document.getElementById("stressInput");
     const relaxEl = document.getElementById("relaxInput");
+
+    const newVisitorBtn = document.getElementById("newVisitorBtn");
+    const newVisitorStatus = document.getElementById("newVisitorStatus");
+
 
     if (!restEl || !stressEl || !relaxEl) {
       console.warn("[heart-rate.js] Entry inputs not found.");
@@ -172,6 +179,38 @@
 
       currentVisitor = newVisitorObject(stationId);
       await safeUpsert(currentVisitor); // create record immediately
+    }
+
+    async function startNewVisitorSession() {
+      // Return lights/sound to neutral immediately
+      if (UILExperience && typeof UILExperience.baseline === "function") {
+        try { await UILExperience.baseline(); } catch (e) {}
+      }
+      if (UILExperience && typeof UILExperience.stop === "function") {
+        try { await UILExperience.stop(); } catch (e) {}
+      }
+
+      // Clear the current entry state
+      currentVisitor = null;
+      clear(restEl);
+      clear(stressEl);
+      clear(relaxEl);
+
+      // Create a NEW empty record immediately so the iPad graph resets
+      const fresh = newVisitorObject(stationId);
+      currentVisitor = fresh;
+      await safeUpsert(currentVisitor);
+
+      if (newVisitorStatus) {
+        newVisitorStatus.textContent = "Ready for next visitor.";
+        setTimeout(() => { if (newVisitorStatus) newVisitorStatus.textContent = ""; }, 1500);
+      }
+
+      focus(restEl);
+    }
+
+    if (newVisitorBtn) {
+      newVisitorBtn.addEventListener("click", startNewVisitorSession);
     }
 
     async function saveRest() {

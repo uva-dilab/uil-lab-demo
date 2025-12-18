@@ -21,7 +21,7 @@
     if (!res.ok || data.ok === false) {
       throw new Error(data?.error || `Request failed: ${url} (HTTP ${res.status})`);
     }
-    return data; // { ok: true, status: { mode, is_playing } }
+    return data; // { ok: true, status: {...} }
   }
 
   async function getJSON(url) {
@@ -37,28 +37,41 @@
     if (!res.ok || data.ok === false) {
       throw new Error(data?.error || `Request failed: ${url} (HTTP ${res.status})`);
     }
-    return data; // { ok: true, status: { mode, is_playing } }
+    return data; // { ok: true, status: {...} }
+  }
+
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatMMSS(totalSec) {
+    const s = Math.max(0, Math.floor(totalSec || 0));
+    const mm = Math.floor(s / 60);
+    const ss = s % 60;
+    return `${pad2(mm)}:${pad2(ss)}`;
   }
 
   const UILExperience = {
-    // Baseline / Neutral (no audio)
     baseline: () => postJSON("/api/experience/baseline"),
-
-    // Active conditions
     startStress: () => postJSON("/api/experience/stress/start"),
     startCalm: () => postJSON("/api/experience/calm/start"),
-
-    // End / reset (should return to neutral in your server logic)
     stop: () => postJSON("/api/experience/stop"),
-
     status: () => getJSON("/api/experience/status"),
 
     formatStatus(status) {
       if (!status) return "";
-      if (status.is_playing) return `Playing: ${status.mode || "unknown"}`;
-      // In your intended flow, "not playing" corresponds to neutral baseline lighting.
+
+      if (status.is_playing) {
+        const mode = status.mode || "unknown";
+        const remaining = typeof status.remaining_sec === "number" ? status.remaining_sec : null;
+        if (remaining != null) return `Playing: ${mode} (${formatMMSS(remaining)})`;
+        return `Playing: ${mode}`;
+      }
+
       return "Neutral (idle)";
     },
+
+    formatMMSS,
   };
 
   global.UILExperience = UILExperience;

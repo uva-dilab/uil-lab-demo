@@ -28,12 +28,12 @@ ASSETS_DIR = os.path.join(DEMO_ROOT, "assets")
 # ----------------------------
 # Experience (Hue + Audio) config
 # ----------------------------
-BRIDGE_IP = "192.168.0.172"
-LIGHTS = [7]
+BRIDGE_IP = "192.168.0.173"
+LIGHTS = [6]
 
-LIGHT_COLOR_CALM = {"hue": 40000, "sat": 254, "bri": 150}
-LIGHT_COLOR_STRESS = {"hue": 1000, "sat": 254, "bri": 254}
-LIGHT_COLOR_NEUTRAL = {"hue": 8500, "sat": 40, "bri": 180}  # adjust later on-site
+LIGHT_COLOR_CALM = {"hue": 32000, "sat": 140, "bri": 105}
+LIGHT_COLOR_STRESS = {"hue": 3000, "sat": 180, "bri": 165}
+LIGHT_COLOR_NEUTRAL = {"hue": 8500, "sat": 25, "bri": 130}  # adjust later on-site
 
 AUDIO_FILE_STRESS = os.path.join(HEART_RATE_DIR, "Stress.wav")
 AUDIO_FILE_CALM = os.path.join(HEART_RATE_DIR, "Nature.wav")
