@@ -1,6 +1,7 @@
 // visitors-history.js
 // Collective "heartbeat envelope" visualization with faint trails + latest visitor highlight
 // Fixes: (1) unstable "latest" due to unsorted data, (2) y-axis rescaling jumps.
+// RED PLEXI EDITION: swap all blue/green palette to red/ember (no behaviour changes).
 
 (function (global) {
   const UILStorage = global.UILStorage;
@@ -78,12 +79,13 @@
     return { min, max };
   }
 
+  // Red/ember gradient for the envelope band (no blues/greens)
   function createEnvelopeGradient(ctx, height) {
     const h = height && height > 0 ? height : 600; // fallback for early renders
     const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, "rgba(56, 189, 248, 0.10)");
-    grad.addColorStop(0.5, "rgba(34, 197, 94, 0.14)");
-    grad.addColorStop(1, "rgba(15, 23, 42, 0.02)");
+    grad.addColorStop(0, "rgba(255, 60, 90, 0.10)");   // crimson mist
+    grad.addColorStop(0.5, "rgba(255, 120, 90, 0.14)"); // ember
+    grad.addColorStop(1, "rgba(10, 2, 3, 0.02)");       // fade to near-black
     return grad;
   }
 
@@ -120,7 +122,7 @@
 
     if (!visitors.length) return;
 
-    // ✅ Critical: make ordering deterministic
+    // Make ordering deterministic
     visitors = stableSortVisitors(visitors);
 
     // Only include values that matter for visuals (plus createdAt for stability)
@@ -147,7 +149,7 @@
       baseHigh = envelope.high;
     }
 
-    // ✅ Lock Y-range (only expand, never shrink)
+    // Lock Y-range (only expand, never shrink)
     const mm = computeGlobalMinMax(visitors, 10);
     if (mm) {
       if (lockedYMin == null || mm.min < lockedYMin) lockedYMin = mm.min;
@@ -156,7 +158,7 @@
 
     const labels = ["Rest", "Stress", "Relax"];
 
-    const latest = visitors[visitors.length - 1]; // now stable due to sorting
+    const latest = visitors[visitors.length - 1]; // stable due to sorting
     const latestData = [latest.resting ?? null, latest.stress ?? null, latest.relax ?? null];
 
     const ctx = canvas.getContext("2d");
@@ -164,7 +166,7 @@
 
     const lowerEnvelope = {
       label: "Envelope Lower",
-      data: baseLow, // breathing loop will overwrite with breathed values
+      data: baseLow, // breathing loop overwrites with breathed values
       tension: 0.55,
       borderWidth: 0,
       pointRadius: 0,
@@ -173,7 +175,7 @@
 
     const upperEnvelope = {
       label: "Envelope Upper",
-      data: baseHigh, // breathing loop will overwrite with breathed values
+      data: baseHigh, // breathing loop overwrites with breathed values
       tension: 0.55,
       borderWidth: 0,
       pointRadius: 0,
@@ -182,29 +184,31 @@
       order: 2,
     };
 
-    // Trails (faint)
+    // Trails (faint) — warm neutral / rose-grey, not green/blue
     const trailDatasets = visitors.map((v) => ({
       label: "Trail",
       data: [v.resting ?? null, v.stress ?? null, v.relax ?? null],
       tension: 0.5,
       borderWidth: 1,
       pointRadius: 0,
-      borderColor: "rgba(148,163,184,0.20)",
+      borderColor: "rgba(254, 205, 211, 0.18)", // soft rose mist
       fill: false,
       order: 3,
     }));
 
-    // Latest highlight
+    // Latest highlight — crimson line + ember points
     const latestDataset = {
       label: "Latest Visitor",
       data: latestData,
       tension: 0.45,
       borderWidth: isNewData ? 4.2 : 3.2,
       pointRadius: isNewData ? 8 : 6,
-      borderColor: "rgba(34,197,94,0.90)",
-      pointBackgroundColor: "rgba(74,222,128,0.95)",
-      pointBorderColor: "rgba(3,46,22,0.7)",
+
+      borderColor: "rgba(255, 60, 90, 0.92)",
+      pointBackgroundColor: "rgba(255, 120, 90, 0.95)",
+      pointBorderColor: "rgba(40, 6, 10, 0.75)",
       pointBorderWidth: 1.5,
+
       fill: false,
       order: 4,
     };
@@ -218,8 +222,6 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-
-          // Keep initial build pretty, but we will avoid animated reframes thereafter
           animation: false,
 
           plugins: {
@@ -233,7 +235,6 @@
               border: { display: false },
             },
             y: {
-              // ✅ Lock the framing so the field doesn't jump
               min: lockedYMin != null ? lockedYMin : undefined,
               max: lockedYMax != null ? lockedYMax : undefined,
               grid: { display: false },
@@ -254,7 +255,6 @@
       historyChart.data.labels = labels;
       historyChart.data.datasets = allDatasets;
 
-      // ✅ No animation on refresh = no reframing “jump”
       historyChart.update("none");
     }
   }

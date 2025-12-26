@@ -5,8 +5,10 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #020617, #020617 40%, #000 100%);
-  color: #e5e7eb;
+
+  /* Black-to-deep-red background to match red plexi frame */
+  background: radial-gradient(circle at top, #120306, #050101 50%, #000 100%);
+  color: #fff1f2; /* warm pale (reads well through red plexi) */
 }
 
 #entryView,
@@ -64,10 +66,12 @@ body {
 .graph-title {
   margin: 0;
   font-size: 2.4rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
   font-weight: 700;
-  color: #ffffff;
+  color: #fff1f2; /* warm pale */
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
 }
 
 /* ---------------------------------------------------------
@@ -79,13 +83,15 @@ body {
   overflow: hidden;
 
   width: 100%;
-  height: 100%;                    /* ✅ fill .graph-layout, avoid double-100vh */
-  background: rgba(15, 23, 42, 0.96);
-  border-radius: 0;
+  height: 100%;
 
+  /* deep near-black with red undertone */
+  background: rgba(10, 2, 3, 0.97);
+
+  border-radius: 0;
   padding: 60px 45px 60px;
-  border: 0;                       /* optional: true full-bleed look */
-  box-shadow: none;                /* optional: true full-bleed look */
+  border: 0;
+  box-shadow: none;
 }
 
 /* Make sure inner content sits above the aura */
@@ -94,26 +100,30 @@ body {
   z-index: 1;
 }
 
+/* ---------------------------------------------------------
+   AURA — black-to-red ember glow (no blues/greens)
+--------------------------------------------------------- */
+
 .graph-card::before {
   content: "";
   position: absolute;
   inset: -30%;
   background:
-    radial-gradient(circle at 15% 0%,   rgba(56, 189, 248, 0.7),  transparent 55%),
-    radial-gradient(circle at 85% 100%, rgba(34, 197, 94, 0.75), transparent 60%),
-    radial-gradient(circle at 0% 100%,  rgba(129, 140, 248, 0.65), transparent 55%);
-  opacity: 0.55;
-  filter: blur(10px);
+    radial-gradient(circle at 20% 0%,   rgba(255, 60, 80, 0.70), transparent 58%),
+    radial-gradient(circle at 85% 100%, rgba(255, 20, 60, 0.55), transparent 62%),
+    radial-gradient(circle at 0% 100%,  rgba(255, 120, 80, 0.35), transparent 60%);
+  opacity: 0.60;
+  filter: blur(14px);
   animation: auraBreath 26s ease-in-out infinite alternate;
   z-index: 0;
   pointer-events: none;
 }
 
 @keyframes auraBreath {
-  0% { transform: scale(1.02) translate(-2%, -2%); opacity: 0.45; }
-  30% { transform: scale(1.07) translate(3%, -1%); opacity: 0.6; }
-  65% { transform: scale(1.1) translate(-3%, 3%); opacity: 0.5; }
-  100% { transform: scale(1.12) translate(1%, 1%); opacity: 0.55; }
+  0%   { transform: scale(1.02) translate(-2%, -2%); opacity: 0.45; }
+  30%  { transform: scale(1.07) translate(3%, -1%);  opacity: 0.65; }
+  65%  { transform: scale(1.10) translate(-3%, 3%);  opacity: 0.55; }
+  100% { transform: scale(1.12) translate(1%, 1%);   opacity: 0.62; }
 }
 
 .graph-header-row {
@@ -131,7 +141,7 @@ body {
 }
 
 /* ---------------------------------------------------------
-   Animated Heart + Live Badge
+   Live badge — switch from green to red
 --------------------------------------------------------- */
 
 .heart-icon {
@@ -152,20 +162,22 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
   padding: 4px 12px;
   margin-right: 8px;
   border-radius: 999px;
   font-size: 0.85rem;
-  background: rgba(22, 163, 74, 0.18);
-  border: 1px solid rgba(34, 197, 94, 0.75);
-  color: #bbf7d0;
-  box-shadow: 0 0 15px 0 rgba(34, 197, 94, 0.15);
+
+  background: rgba(255, 40, 70, 0.14);
+  border: 1px solid rgba(255, 80, 110, 0.62);
+  color: #ffe4e6;
+  box-shadow: 0 0 16px rgba(255, 60, 90, 0.18);
   animation: glowBadge 3.6s infinite ease-in-out;
 }
 
 @keyframes glowBadge {
-  0%, 100% { box-shadow: 0 0 10px 0 rgba(34, 197, 94, 0.25); }
-  50% { box-shadow: 0 0 22px 3px rgba(34, 197, 94, 0.40); }
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 60, 90, 0.22); }
+  50%      { box-shadow: 0 0 24px 4px rgba(255, 60, 90, 0.38); }
 }
 
 /* ---------------------------------------------------------
@@ -174,7 +186,7 @@ body {
 
 .graph-canvas-wrapper {
   width: 100%;
-  height: calc(100vh - 190px);   /* fixed spacing in calc() */
+  height: calc(100vh - 190px);
   margin-top: 0;
 }
 
@@ -182,7 +194,6 @@ body {
   display: none;
 }
 
-/* Remove global canvas override */
 canvas {
   font-size: initial !important;
 }

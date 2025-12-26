@@ -53,11 +53,21 @@
       }
       return;
     }
+    // Ensure "latest" is truly the newest record
+    visitors = visitors.slice().sort((a, b) => {
+      const ta = Date.parse(a.createdAt || "");
+      const tb = Date.parse(b.createdAt || "");
+      if (Number.isFinite(ta) && Number.isFinite(tb)) return ta - tb;
+      // fallback: id compare
+      const ida = String(a.id || "");
+      const idb = String(b.id || "");
+      return ida.localeCompare(idb);
+    });
 
     const latest = visitors[visitors.length - 1];
     const { name, resting, stress, relax } = latest;
 
-    const labels = ["Resting", "Stress", "Relax"];
+    const labels = ["Resting", "Excited", "Relaxed"];
     const dataPoints = [resting, stress, relax].map((v) =>
       typeof v === "number" ? v : null
     );
@@ -88,7 +98,7 @@
     const minVal = Math.min(...numeric);
     const maxVal = Math.max(...numeric);
 
-    // 🔥 Dynamic breathing room — prevents first point from touching Y-axis
+    // Dynamic breathing room — prevents first point from touching Y-axis
     const offset = Math.max(8, Math.round((maxVal - minVal) * 0.15));
 
     if (hrChart && signature === lastDataSignature) return;
@@ -96,33 +106,30 @@
     const ctx = canvas.getContext("2d");
 
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, "rgba(34, 197, 94, 0.45)");
-    gradient.addColorStop(1, "rgba(34, 197, 94, 0.03)");
+    gradient.addColorStop(0, "rgba(255, 60, 90, 0.42)");
+    gradient.addColorStop(1, "rgba(255, 60, 90, 0.03)");
+    //gradient.addColorStop(0, "rgba(34, 197, 94, 0.45)");
+    //gradient.addColorStop(1, "rgba(34, 197, 94, 0.03)");
 
     const datasetBase = {
       label: "Heart rate (BPM)",
       data: dataPoints,
       tension: 0.35,
       borderWidth: 3,
-      pointRadius: 8,
-      pointHoverRadius: 10,
-      pointHitRadius: 14,
       spanGaps: true,
       fill: true,
-      borderColor: "rgba(34, 197, 94, 0.95)",
+
+      borderColor: "rgba(255, 60, 90, 0.95)",
       backgroundColor: gradient,
-     // ✨ Animated, glowing, layered points
-      pointBackgroundColor: "#22c55e",
-      pointBorderColor: "#0f172a",
+      pointBackgroundColor: "rgba(255, 120, 90, 0.95)",
+      pointBorderColor: "rgba(40, 6, 10, 0.75)",
       pointBorderWidth: 3,
       pointStyle: "circle",
       pointRadius: 10,
-      hoverRadius: 14,
-      pointHoverBorderWidth: 4,
-
-      //pointBackgroundColor: "#22c55e",
-      //pointBorderColor: "#0f172a",
-      //pointBorderWidth: 2,
+      pointHoverRadius: 10,
+      pointHitRadius: 14,
+      //hoverRadius: 14,
+      //pointHoverBorderWidth: 4,
     };
 
     if (!hrChart) {
